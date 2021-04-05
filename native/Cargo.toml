@@ -1,14 +1,14 @@
 [package]
-name = "ssb-validate-neon"
+name = "ssb-validate2-neon"
 version = "0.1.0"
 authors = ["Andrew Reid <glyph@mycelial.technology>"]
-license = "MIT"
+license = "LGPL-3.0"
 build = "build.rs"
 edition = "2018"
 exclude = ["artifacts.json", "index.node"]
 
 [lib]
-name = "ssb_validate_neon"
+name = "ssb_validate2_neon"
 crate-type = ["cdylib"]
 
 [build-dependencies]
