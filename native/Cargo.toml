@@ -16,3 +16,4 @@ neon-build = "0.8.0"
 
 [dependencies]
 neon = "0.8.0"
+ssb-validate = "1.0.1"
