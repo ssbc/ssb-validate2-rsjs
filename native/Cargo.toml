@@ -15,5 +15,6 @@ crate-type = ["cdylib"]
 neon-build = "0.8.0"
 
 [dependencies]
+arrayvec = "0.5.1"
 neon = "0.8.0"
 ssb-validate = "1.0.1"
