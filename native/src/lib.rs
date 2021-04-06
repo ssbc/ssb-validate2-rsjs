@@ -1,39 +1,18 @@
 use neon::prelude::*;
 use ssb_validate;
 
-/*
-struct SsbMessageValue {
-    pub sequence: i32,
-    pub author: Multikey,
-}
-
-//#[derive(Deserialize)]
-struct SsbMessage {
-    pub key: Multihash,
-    pub value: SsbMessageValue,
-}
-*/
-
-// validate the message hash chain
-fn validate_message(mut cx: FunctionContext) -> JsResult<JsString> {
-    // parse arg for message 1
-    // attempt to cast the first argument to a JsObject,
-    // then get the value if cast is successul
-    let msg1 = cx.argument::<JsObject>(0)?;
-    // parse arg for message 2
-    let msg2 = cx.argument::<JsObject>(1)?;
-
-    // match on validation
-    /*
-    match ssb_validate::validate_message_hash_chain(msg1.as_bytes(), msg2.as_bytes()) {
+// Validate a single message value (must be first message of feed).
+// Expects arguments in the form of JSON strings. This is obviously undesireable (we want to accept
+// a JsObject instead, but it's a simple first step to us moving).
+fn validate_single_message_value(mut cx: FunctionContext) -> JsResult<JsString> {
+    let arg0 = cx.argument::<JsValue>(0)?;
+    let msg1 = arg0.downcast::<JsString>().or_throw(&mut cx)?.value();
+    match ssb_validate::validate_message_value_hash_chain::<_, &[u8]>(msg1.as_bytes(), None) {
         Ok(_) => Ok(cx.string("validated")),
         Err(e) => panic!("{}", e),
-    };
-    */
-
-    Ok(cx.string("validated"))
+    }
 }
 
 register_module!(mut cx, {
-    cx.export_function("validateMessage", validate_message)
+    cx.export_function("validateSingleMsgValue", validate_single_message_value)
 });
