@@ -73,15 +73,15 @@ test('core indexes', (t) => {
 // read data from offset log and populate into msgs array
 test('query for post messages and attempt validation', (t) => {
   db.onReady(() => {
-    const start = Date.now()
     query(
       fromDB(db),
       //where(equal(seekType, 'post', { indexType: 'type' })),
       toCallback((err, msgs) => {
         if (err) t.fail(err)
-        const duration = Date.now() - start
+        const start = Date.now()
         // validate array of successive messages from a feed
         validate.validateMsgArray(msgs)
+        const duration = Date.now() - start
         t.pass(`validated ${MESSAGES} messages. duration: ${duration}ms`)
         t.end()
       })

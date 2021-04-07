@@ -6,24 +6,15 @@ Validate SSB messages and message values using the [ssb-validate crate](https://
 
 ## Usage
 
-Validate the value of a single message:
+Validate an array of messages by a single author:
 
 ```javascript
 const validate = require('.');
 
-msg = {
-  previous: null,
-  sequence: 1,
-  author: '@ZByBkJp2fBgfw0ql3wbQFOWa9Fphzv0T0pq6FEvizuc=.ed25519',
-  timestamp: 1597344109162,
-  hash: 'sha256',
-  content: { type: 'example' },
-  signature: 'TMxuh2fAkPs9/6MNcyasYx+7m/kzD992zxLaBb4cnDDGnlYyplMhgpeA6uTtn7oQLJd3bY0XBw8mUu/9vnd3Bg==.sig.ed25519'
-}
-
-console.log(validate.validateSingleMsgValue(msg))
-// validated
+validate.validateMsgArray(msgs)
 ```
+
+See `test.js` in this repo for in-context example usage (using [ssb-fixtures](https://github.com/ssb-ngi-pointer/ssb-fixtures) and [jitdb](https://github.com/ssb-ngi-pointer/jitdb)).
 
 ## Links
 
