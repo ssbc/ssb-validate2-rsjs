@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: AGPL-3.0-only
+
 // taken directly from ssb-keys-neon
 //  - next: break this out into neon-helpers crate
 //  - just using for now to test assumptions

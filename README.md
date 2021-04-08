@@ -22,4 +22,4 @@ Neon: [repo](https://github.com/neon-bindings/neon) & [docs](https://neon-bindin
 
 ## License
 
-LGPL 3.0.
+AGPL 3.0.
