@@ -8,9 +8,15 @@
     "url": "https://github.com/mycognosist/ssb-validate2-neon"
   },
   "author": "Andrew Reid <glyph@mycelial.technology>",
-  "license": "AGPL-3.0",
+  "license": "LGPL-3.0",
   "dependencies": {
     "neon-cli": "^0.8.0"
+  },
+  "devDependencies": {
+    "mkdirp": "^1.0.4",
+    "rimraf": "^3.0.2",
+    "ssb-fixtures": "^2.2.0",
+    "tape": "^5.2.2"
   },
   "scripts": {
     "install": "neon build"
