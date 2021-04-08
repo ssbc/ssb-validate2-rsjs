@@ -6,6 +6,27 @@ use arrayvec::ArrayVec;
 use neon::prelude::*;
 use ssb_validate;
 
+fn initial(mut cx: FunctionContext) -> JsResult<JsObject> {
+    // create an empty object
+    let object = JsObject::new(&mut cx);
+
+    // define the initial state values
+    let validated = cx.number(0 as f64);
+    let queued = cx.number(0 as f64);
+    let queue = cx.empty_array();
+    let feeds = JsObject::new(&mut cx);
+    let error = cx.null();
+
+    // assign the initial state values to the object
+    object.set(&mut cx, "validated", validated).unwrap();
+    object.set(&mut cx, "queued", queued).unwrap();
+    object.set(&mut cx, "queue", queue).unwrap();
+    object.set(&mut cx, "feeds", feeds).unwrap();
+    object.set(&mut cx, "error", error).unwrap();
+
+    Ok(object)
+}
+
 // Validate array of messages.
 fn validate_message_array(mut cx: FunctionContext) -> JsResult<JsString> {
     let js_msgs: Handle<JsArray> = cx.argument(0)?;
