@@ -52,17 +52,6 @@ fn validate_message_value(mut cx: FunctionContext) -> JsResult<JsString> {
     }
 }
 
-// Return number of items in array.
-fn array_item_count(mut cx: FunctionContext) -> JsResult<JsString> {
-    // take the first argument, which must be an array
-    let js_msgs: Handle<JsArray> = cx.argument(0)?;
-    // convert JsArray to Rust Vec
-    let msgs: Vec<Handle<JsValue>> = js_msgs.to_vec(&mut cx)?;
-    // check number of messages in vec
-    let len = format!("{}", msgs.len());
-    Ok(cx.string(len))
-}
-
 // Validate array of messages.
 fn validate_message_array(mut cx: FunctionContext) -> JsResult<JsString> {
     let js_msgs: Handle<JsArray> = cx.argument(0)?;
@@ -86,7 +75,6 @@ fn validate_message_array(mut cx: FunctionContext) -> JsResult<JsString> {
 register_module!(mut cx, {
     cx.export_function("validateFirstMsgValue", validate_single_message_value)?;
     cx.export_function("validateMsgValue", validate_message_value)?;
-    cx.export_function("countArrayItems", array_item_count)?;
     cx.export_function("validateMsgArray", validate_message_array)?;
     Ok(())
 });
