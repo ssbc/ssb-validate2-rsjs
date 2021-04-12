@@ -29,8 +29,10 @@ rimraf.sync(dir)
 mkdirp.sync(dir)
 
 const SEED = 'sloop'
-const MESSAGES = 5000
+const MESSAGES = 100
 const AUTHORS = 1
+// run each test x times
+const ITERATIONS = 10
 
 test('generate fixture with flumelog-offset', (t) => {
   generateFixture({
@@ -69,20 +71,157 @@ test('core indexes', (t) => {
     t.end()
   })
 })
-
-// read data from offset log and populate into msgs array
-test('query for post messages and attempt validation', (t) => {
+test('doNothing', (t) => {
   db.onReady(() => {
     query(
       fromDB(db),
-      //where(equal(seekType, 'post', { indexType: 'type' })),
       toCallback((err, msgs) => {
         if (err) t.fail(err)
-        const start = Date.now()
-        // validate array of successive messages from a feed
-        validate.validateMsgArray(msgs)
-        const duration = Date.now() - start
-        t.pass(`validated ${MESSAGES} messages. duration: ${duration}ms`)
+        var i;
+        var totalDuration = 0;
+        for (i = 0; i < ITERATIONS; i++) {
+          const start = Date.now()
+          validate.doNothing(msgs)
+          const duration = Date.now() - start
+          totalDuration += duration
+          t.pass(`do_nothing. duration: ${duration} ms`)
+        }
+        avgDuration = totalDuration / ITERATIONS
+        console.log(`average duration: ${avgDuration} ms`)
+        t.end()
+      })
+    )
+  })
+})
+test('getArg', (t) => {
+  db.onReady(() => {
+    query(
+      fromDB(db),
+      toCallback((err, msgs) => {
+        if (err) t.fail(err)
+        var i;
+        var totalDuration = 0;
+        for (i = 0; i < ITERATIONS; i++) {
+          const start = Date.now()
+          validate.getArg(msgs)
+          const duration = Date.now() - start
+          totalDuration += duration
+          t.pass(`get_arg. duration: ${duration} ms`)
+        }
+        avgDuration = totalDuration / ITERATIONS
+        console.log(`average duration: ${avgDuration} ms`)
+        t.end()
+      })
+    )
+  })
+})
+test('argVec', (t) => {
+  db.onReady(() => {
+    query(
+      fromDB(db),
+      toCallback((err, msgs) => {
+        var i;
+        var totalDuration = 0;
+        for (i = 0; i < ITERATIONS; i++) {
+          const start = Date.now()
+          validate.argVec(msgs)
+          const duration = Date.now() - start
+          totalDuration += duration
+          t.pass(`arg_to_vec. validated ${MESSAGES} messages. duration: ${duration} ms`)
+        }
+        avgDuration = totalDuration / ITERATIONS
+        console.log(`average duration: ${avgDuration} ms`)
+        t.end()
+      })
+    )
+  })
+})
+test('vecBytes (stringify then to_bytes)', (t) => {
+  db.onReady(() => {
+    query(
+      fromDB(db),
+      toCallback((err, msgs) => {
+        if (err) t.fail(err)
+        var i;
+        var totalDuration = 0;
+        for (i = 0; i < ITERATIONS; i++) {
+          const start = Date.now()
+          validate.vecBytes(msgs)
+          const duration = Date.now() - start
+          totalDuration += duration
+          t.pass(`vec_to_bytes. validated ${MESSAGES} messages. duration: ${duration} ms`)
+        }
+        avgDuration = totalDuration / ITERATIONS
+        console.log(`average duration: ${avgDuration} ms`)
+        t.end()
+      })
+    )
+  })
+})
+test('validateMsgArray', (t) => {
+  db.onReady(() => {
+    query(
+      fromDB(db),
+      toCallback((err, msgs) => {
+        if (err) t.fail(err)
+        var i;
+        var totalDuration = 0;
+        for (i = 0; i < ITERATIONS; i++) {
+          // validate array of successive messages from a feed
+          const start = Date.now()
+          validate.validateMsgArray(msgs)
+          const duration = Date.now() - start
+          totalDuration += duration
+          t.pass(`par_validate. validated ${MESSAGES} messages. duration: ${duration} ms`)
+        }
+        avgDuration = totalDuration / ITERATIONS
+        console.log(`average duration: ${avgDuration} ms`)
+        t.end()
+      })
+    )
+  })
+})
+test('verifyMsgArray', (t) => {
+  db.onReady(() => {
+    query(
+      fromDB(db),
+      toCallback((err, msgs) => {
+        if (err) t.fail(err)
+        var i;
+        var totalDuration = 0;
+        for (i = 0; i < ITERATIONS; i++) {
+          // validate array of successive messages from a feed
+          const start = Date.now()
+          validate.verifyMsgArray(msgs)
+          const duration = Date.now() - start
+          totalDuration += duration
+          t.pass(`verified ${MESSAGES} messages. duration: ${duration} ms`)
+        }
+        avgDuration = totalDuration / ITERATIONS
+        console.log(`average duration: ${avgDuration} ms`)
+        t.end()
+      })
+    )
+  })
+})
+test('verifyValidateMsgArray', (t) => {
+  db.onReady(() => {
+    query(
+      fromDB(db),
+      toCallback((err, msgs) => {
+        if (err) t.fail(err)
+        var i;
+        var totalDuration = 0;
+        for (i = 0; i < ITERATIONS; i++) {
+          // validate array of successive messages from a feed
+          const start = Date.now()
+          validate.verifyValidateMsgArray(msgs)
+          const duration = Date.now() - start
+          totalDuration += duration
+          t.pass(`verified and validated ${MESSAGES} messages. duration: ${duration} ms`)
+        }
+        avgDuration = totalDuration / ITERATIONS
+        console.log(`average duration: ${avgDuration} ms`)
         t.end()
       })
     )

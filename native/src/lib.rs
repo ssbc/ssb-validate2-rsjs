@@ -4,30 +4,41 @@ mod utils;
 
 use arrayvec::ArrayVec;
 use neon::prelude::*;
-use ssb_validate;
 
-fn initial(mut cx: FunctionContext) -> JsResult<JsObject> {
-    // create an empty object
-    let object = JsObject::new(&mut cx);
+// Implement multiple function variants to test overhead of neon.
+fn do_nothing(mut cx: FunctionContext) -> JsResult<JsString> {
+    Ok(cx.string("validated"))
+}
 
-    // define the initial state values
-    let validated = cx.number(0 as f64);
-    let queued = cx.number(0 as f64);
-    let queue = cx.empty_array();
-    let feeds = JsObject::new(&mut cx);
-    let error = cx.null();
+fn get_arg(mut cx: FunctionContext) -> JsResult<JsString> {
+    let _js_msgs: Handle<JsArray> = cx.argument(0)?;
+    Ok(cx.string("validated"))
+}
 
-    // assign the initial state values to the object
-    object.set(&mut cx, "validated", validated).unwrap();
-    object.set(&mut cx, "queued", queued).unwrap();
-    object.set(&mut cx, "queue", queue).unwrap();
-    object.set(&mut cx, "feeds", feeds).unwrap();
-    object.set(&mut cx, "error", error).unwrap();
+fn arg_to_vec(mut cx: FunctionContext) -> JsResult<JsString> {
+    let js_msgs: Handle<JsArray> = cx.argument(0)?;
+    let _msg_array: Vec<Handle<JsValue>> = js_msgs.to_vec(&mut cx)?;
+    Ok(cx.string("validated"))
+}
 
-    Ok(object)
+fn vec_to_bytes(mut cx: FunctionContext) -> JsResult<JsString> {
+    let js_msgs: Handle<JsArray> = cx.argument(0)?;
+    let msg_array: Vec<Handle<JsValue>> = js_msgs.to_vec(&mut cx)?;
+
+    let mut msgs = Vec::new();
+
+    for msg in msg_array {
+        let msg_bytes = utils::json_stringify(&mut cx, ArrayVec::from([msg]))?
+            .value()
+            .into_bytes();
+        msgs.push(msg_bytes)
+    }
+
+    Ok(cx.string("validated"))
 }
 
 // Validate array of messages.
+// TODO: change output to JsResult<JsBoolean> and `throw` on error
 fn validate_message_array(mut cx: FunctionContext) -> JsResult<JsString> {
     let js_msgs: Handle<JsArray> = cx.argument(0)?;
     let msg_array: Vec<Handle<JsValue>> = js_msgs.to_vec(&mut cx)?;
@@ -47,7 +58,57 @@ fn validate_message_array(mut cx: FunctionContext) -> JsResult<JsString> {
     }
 }
 
+// Verify signatures and validate an array of messages.
+// TODO: change output to JsResult<JsBoolean> and `throw` on error
+fn verify_message_array(mut cx: FunctionContext) -> JsResult<JsString> {
+    let js_msgs: Handle<JsArray> = cx.argument(0)?;
+    let msg_array: Vec<Handle<JsValue>> = js_msgs.to_vec(&mut cx)?;
+
+    let mut msgs = Vec::new();
+
+    for msg in msg_array {
+        let msg_bytes = utils::json_stringify(&mut cx, ArrayVec::from([msg]))?
+            .value()
+            .into_bytes();
+        msgs.push(msg_bytes)
+    }
+
+    match ssb_verify_signatures::par_verify_messages(&msgs, None) {
+        Ok(_) => Ok(cx.string("verified")),
+        Err(e) => panic!("{}", e),
+    }
+}
+
+// Verify signatures for an array of messages.
+// TODO: change output to JsResult<JsBoolean> and `throw` on error
+fn verify_validate_message_array(mut cx: FunctionContext) -> JsResult<JsString> {
+    let js_msgs: Handle<JsArray> = cx.argument(0)?;
+    let msg_array: Vec<Handle<JsValue>> = js_msgs.to_vec(&mut cx)?;
+
+    let mut msgs = Vec::new();
+
+    for msg in msg_array {
+        let msg_bytes = utils::json_stringify(&mut cx, ArrayVec::from([msg]))?
+            .value()
+            .into_bytes();
+        msgs.push(msg_bytes)
+    }
+
+    ssb_verify_signatures::par_verify_messages(&msgs, None).unwrap();
+
+    match ssb_validate::par_validate_message_hash_chain_of_feed::<_, &[u8]>(&msgs, None) {
+        Ok(_) => Ok(cx.string("validated")),
+        Err(e) => panic!("{}", e),
+    }
+}
+
 register_module!(mut cx, {
+    cx.export_function("doNothing", do_nothing)?;
+    cx.export_function("getArg", get_arg)?;
+    cx.export_function("argVec", arg_to_vec)?;
+    cx.export_function("vecBytes", vec_to_bytes)?;
     cx.export_function("validateMsgArray", validate_message_array)?;
+    cx.export_function("verifyMsgArray", verify_message_array)?;
+    cx.export_function("verifyValidateMsgArray", verify_validate_message_array)?;
     Ok(())
 });
