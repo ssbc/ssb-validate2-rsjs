@@ -96,7 +96,7 @@ test('batch verification of message signatures', (t) => {
         if (err) t.fail(err)
         const start = Date.now()
         // attempt verification of all messages
-        validate.verifySignatures(msgs)
+        t.true(validate.verifySignatures(msgs), 'success')
         const duration = Date.now() - start
         t.pass(`validated ${MESSAGES} messages in ${duration} ms`)
         t.end()
@@ -107,7 +107,7 @@ test('batch verification of message signatures', (t) => {
 test('verification of single message signature (valid)', (t) => {
   const start = Date.now()
   let msgs = [validMsg]
-  validate.verifySignatures(msgs)
+  t.true(validate.verifySignatures(msgs), 'success')
   const duration = Date.now() - start
   t.pass(`validated ${MESSAGES} messages in ${duration} ms`)
   t.end()
@@ -133,7 +133,7 @@ test('batch validation of full feed', (t) => {
         if (err) t.fail(err)
         const start = Date.now()
         // attempt validation of all messages (assume `previous` is null)
-        validate.validateBatch(msgs)
+        t.true(validate.validateBatch(msgs), 'success')
         const duration = Date.now() - start
         t.pass(`validated ${MESSAGES} messages in ${duration} ms`)
         t.end()
@@ -151,7 +151,7 @@ test('batch validation of partial feed', (t) => {
         previous = msgs.shift()
         const start = Date.now()
         // attempt validation of all messages
-        validate.validateBatch(msgs, previous)
+        t.true(validate.validateBatch(msgs, previous), 'success')
         const duration = Date.now() - start
         t.pass(`validated ${MESSAGES} messages in ${duration} ms`)
         t.end()
@@ -172,7 +172,7 @@ test('batch validation of partial feed without `previous`', (t) => {
           validate.validateBatch(msgs)
           t.fail('should have thrown')
         } catch (err) {
-          //t.looseEqual(err, 'Error: found invalid message: The first message of a feed must have seq of 1')
+          console.log(err.message)
           t.end()
         }
       })
