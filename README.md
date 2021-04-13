@@ -40,6 +40,6 @@ node test/test
 node test/perf
 ```
 
-# License
+## License
 
 AGPL 3.0.
