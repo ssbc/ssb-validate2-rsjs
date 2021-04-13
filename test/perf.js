@@ -1,4 +1,5 @@
-const validate = require('.');
+const validate = require('../.');
+const legacyValidate = require('ssb-validate')
 const test = require('tape')
 const fs = require('fs');
 const path = require('path')
@@ -29,10 +30,10 @@ rimraf.sync(dir)
 mkdirp.sync(dir)
 
 const SEED = 'sloop'
-const MESSAGES = 5
+const MESSAGES = 100
 const AUTHORS = 1
 // run each test x times
-const ITERATIONS = 1
+const ITERATIONS = 10
 
 test('generate fixture with flumelog-offset', (t) => {
   generateFixture({
@@ -71,23 +72,75 @@ test('core indexes', (t) => {
     t.end()
   })
 })
+// batch verification of signatures for an array of messages
+test('verifySignatures', (t) => {
+  db.onReady(() => {
+    query(
+      fromDB(db),
+      toCallback((err, msgs) => {
+        if (err) t.fail(err)
+        var i;
+        var totalDuration = 0;
+        for (i = 0; i < ITERATIONS; i++) {
+          const start = Date.now()
+          validate.verifySignatures(msgs)
+          const duration = Date.now() - start
+          totalDuration += duration
+          t.pass(`verified ${MESSAGES} message signatures in ${duration} ms`)
+        }
+        avgDuration = totalDuration / ITERATIONS
+        console.log(`average duration: ${avgDuration} ms`)
+        t.end()
+      })
+    )
+  })
+})
+// batch verification and validation for an array of messages
 test('validateBatch', (t) => {
   db.onReady(() => {
     query(
       fromDB(db),
       toCallback((err, msgs) => {
         if (err) t.fail(err)
-        // -> testing stuff
-        previous = msgs.shift()
         var i;
         var totalDuration = 0;
         for (i = 0; i < ITERATIONS; i++) {
           // validate array of successive messages from a feed
           const start = Date.now()
-          validate.validateBatch(msgs, previous)
+          validate.validateBatch(msgs)
           const duration = Date.now() - start
           totalDuration += duration
-          t.pass(`verified ${MESSAGES} messages. duration: ${duration} ms`)
+          t.pass(`validated ${MESSAGES} messages in ${duration} ms`)
+        }
+        avgDuration = totalDuration / ITERATIONS
+        console.log(`average duration: ${avgDuration} ms`)
+        t.end()
+      })
+    )
+  })
+})
+test('appendKVT (legacy validation)', (t) => {
+  db.onReady(() => {
+    query(
+      fromDB(db),
+      toCallback((err, msgs) => {
+        if (err) t.fail(err)
+        var i;
+        var totalDuration = 0;
+        for (i = 0; i < ITERATIONS; i++) {
+          var hmac_key = null
+          var state = legacyValidate.initial()
+          const start = Date.now()
+          msgs.forEach(function (msg) {
+            try {
+              state = legacyValidate.appendKVT(state, hmac_key, msg)
+            } catch (err) {
+              console.log(err)
+            }
+          })
+          const duration = Date.now() - start
+          totalDuration += duration
+          t.pass(`validated ${MESSAGES} messages in ${duration} ms`)
         }
         avgDuration = totalDuration / ITERATIONS
         console.log(`average duration: ${avgDuration} ms`)
