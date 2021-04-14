@@ -78,13 +78,11 @@ let raf
 let db
 
 test('core indexes', (t) => {
-  const start = Date.now()
   raf = Log(newLogPath, { blockSize: 64 * 1024 })
   rimraf.sync(indexesDir)
   db = JITDB(raf, indexesDir)
   db.onReady(() => {
-    const duration = Date.now() - start
-    t.pass(`duration: ${duration}ms`)
+    t.pass(`database ready`)
     t.end()
   })
 })
@@ -94,26 +92,21 @@ test('batch verification of message signatures', (t) => {
       fromDB(db),
       toCallback((err, msgs) => {
         if (err) t.fail(err)
-        const start = Date.now()
         // attempt verification of all messages
         t.true(validate.verifySignatures(msgs), 'success')
-        const duration = Date.now() - start
-        t.pass(`validated ${MESSAGES} messages in ${duration} ms`)
+        t.pass(`validated ${MESSAGES} messages`)
         t.end()
       })
     )
   })
 })
 test('verification of single message signature (valid)', (t) => {
-  const start = Date.now()
   let msgs = [validMsg]
   t.true(validate.verifySignatures(msgs), 'success')
-  const duration = Date.now() - start
-  t.pass(`validated ${MESSAGES} messages in ${duration} ms`)
+  t.pass(`validated ${MESSAGES} messages`)
   t.end()
 })
 test('verification of single message signature (invalid)', (t) => {
-  const start = Date.now()
   let invalidMsg = validMsg
   invalidMsg.value.content.following = false
   let msgs = [invalidMsg]
@@ -131,11 +124,9 @@ test('batch validation of full feed', (t) => {
       fromDB(db),
       toCallback((err, msgs) => {
         if (err) t.fail(err)
-        const start = Date.now()
         // attempt validation of all messages (assume `previous` is null)
         t.true(validate.validateBatch(msgs), 'success')
-        const duration = Date.now() - start
-        t.pass(`validated ${MESSAGES} messages in ${duration} ms`)
+        t.pass(`validated ${MESSAGES} messages`)
         t.end()
       })
     )
@@ -149,11 +140,9 @@ test('batch validation of partial feed', (t) => {
         if (err) t.fail(err)
         // shift first msg into `previous`
         previous = msgs.shift()
-        const start = Date.now()
         // attempt validation of all messages
         t.true(validate.validateBatch(msgs, previous), 'success')
-        const duration = Date.now() - start
-        t.pass(`validated ${MESSAGES} messages in ${duration} ms`)
+        t.pass(`validated ${MESSAGES} messages`)
         t.end()
       })
     )
