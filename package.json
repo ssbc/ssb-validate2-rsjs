@@ -13,6 +13,8 @@
     "neon-cli": "^0.8.0"
   },
   "devDependencies": {
+    "async-append-only-log": "^3.0.8",
+    "jitdb": "^3.0.2",
     "mkdirp": "^1.0.4",
     "rimraf": "^3.0.2",
     "ssb-fixtures": "^2.2.0",
