@@ -114,7 +114,7 @@ test('verification of single message signature (invalid)', (t) => {
     validate.verifySignatures(msgs)
     t.fail('should have thrown')
   } catch (err) {
-    console.log(err.message)
+    t.match(err.message, /Signature was invalid/, 'found invalid message: Signature was invalid')
     t.end()
   }
 })
@@ -161,7 +161,7 @@ test('batch validation of partial feed without `previous`', (t) => {
           validate.validateBatch(msgs)
           t.fail('should have thrown')
         } catch (err) {
-          console.log(err.message)
+          t.match(err.message, /The first message of a feed must have seq of 1/, 'found invalid message: The first message of a feed must have seq of 1')
           t.end()
         }
       })
