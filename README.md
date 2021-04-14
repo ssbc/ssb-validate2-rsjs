@@ -1,24 +1,44 @@
 # ssb-validate2-neon
 
-Cryptographic validation of Scuttlebutt messages in the form of Neon bindings (Rust) for Node.js.
+Cryptographic validation of Scuttlebutt messages in the form of [Neon bindings](https://github.com/neon-bindings/neon) (Rust) for Node.js.
 
-Validate SSB messages and message values using the [ssb-validate crate](https://crates.io/crates/ssb-validate) ([repo](https://github.com/sunrise-choir/ssb-validate) & [docs](https://docs.rs/ssb-validate/1.0.1/ssb_validate/index.html)). Generate bindings to expose this functionality as a Node module.
+Perform batch verification and validation of SSB messages using [ssb-verify-signatures](https://crates.io/crates/ssb-verify-signatures) and [ssb-validate](https://crates.io/crates/ssb-validate) from the [Sunrise Choir](https://github.com/sunrise-choir).
 
 ## Usage
-
-Validate an array of messages by a single author:
 
 ```javascript
 const validate = require('.');
 
-validate.validateMsgArray(msgs)
+// Verify signatures for an array of messages
+validate.verifySignatures(msgs)
+
+// Validate an array of messages by a single author
+// Note: assumes msgs[0].sequence == 1 (ie. `previous` == null)
+validate.validateBatch(msgs)
+
+// Validate an array of messages by a single author (includes `previous`)
+validate.validateBatch(msgs, previous)
 ```
 
-See `test.js` in this repo for in-context example usage (using [ssb-fixtures](https://github.com/ssb-ngi-pointer/ssb-fixtures) and [jitdb](https://github.com/ssb-ngi-pointer/jitdb)).
+See `test/test.js` in this repo for in-context example usage (uses [ssb-fixtures](https://github.com/ssb-ngi-pointer/ssb-fixtures) and [jitdb](https://github.com/ssb-ngi-pointer/jitdb)).
 
-## Links
+## Behaviour
 
-Neon: [repo](https://github.com/neon-bindings/neon) & [docs](https://neon-bindings.com/docs/intro).
+Both `verifySignatures()` and `validateBatch()` return `true` on success. In the case of a failure in verification or validation, both functions will return immediately with detailed information in the error message (currently includes the reason for failure and the full message which caused the failure).
+
+Note that `validateBatch()` performs signature verification _and_ full message validation.
+
+## Tests
+
+```bash
+git clone git@github.com:ssb-ngi-pointer/ssb-validate2-neon.git
+cd ssb-validate2-neon
+npm install
+# Run tests
+node test/test
+# Run benchmarks
+node test/perf
+```
 
 ## License
 
