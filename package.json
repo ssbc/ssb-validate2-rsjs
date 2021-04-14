@@ -16,13 +16,17 @@
     "async-append-only-log": "^3.0.8",
     "jitdb": "^3.0.2",
     "mkdirp": "^1.0.4",
+    "prettier": "^2.2.1",
     "rimraf": "^3.0.2",
     "ssb-fixtures": "^2.2.0",
     "ssb-validate": "^4.1.4",
     "ssb-validation-dataset": "^1.2.1",
+    "tap-spec": "^5.0.0",
     "tape": "^5.2.2"
   },
   "scripts": {
-    "install": "neon build"
+    "install": "neon build",
+    "test": "tape test/*.js | tap-spec",
+    "format-code": "prettier --write \"test/*.js\""
   }
 }

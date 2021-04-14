@@ -1,13 +1,13 @@
-const validate = require('../.');
-const legacyValidate = require('ssb-validate')
-const test = require('tape')
-const fs = require('fs');
-const path = require('path')
-const Log = require('async-append-only-log')
-const generateFixture = require('ssb-fixtures')
-const rimraf = require('rimraf')
-const mkdirp = require('mkdirp')
-const JITDB = require('jitdb')
+const validate = require("../.");
+const legacyValidate = require("ssb-validate");
+const test = require("tape");
+const fs = require("fs");
+const path = require("path");
+const Log = require("async-append-only-log");
+const generateFixture = require("ssb-fixtures");
+const rimraf = require("rimraf");
+const mkdirp = require("mkdirp");
+const JITDB = require("jitdb");
 const {
   query,
   fromDB,
@@ -15,27 +15,27 @@ const {
   equal,
   slowEqual,
   toCallback,
-} = require('jitdb/operators')
-const seekType = require('jitdb/test/helpers')
-const copy = require('jitdb/copy-json-to-bipf-async')
+} = require("jitdb/operators");
+const seekType = require("jitdb/test/helpers");
+const copy = require("jitdb/copy-json-to-bipf-async");
 
-// define directory and paths 
-const dir = '/tmp/validate-benchmark' 
-const oldLogPath = path.join(dir, 'flume', 'log.offset') 
-const newLogPath = path.join(dir, 'flume', 'log.bipf') 
-const indexesDir = path.join(dir, 'indexes')
+// define directory and paths
+const dir = "/tmp/validate-benchmark";
+const oldLogPath = path.join(dir, "flume", "log.offset");
+const newLogPath = path.join(dir, "flume", "log.bipf");
+const indexesDir = path.join(dir, "indexes");
 
 // generate fixture
-rimraf.sync(dir)
-mkdirp.sync(dir)
+rimraf.sync(dir);
+mkdirp.sync(dir);
 
-const SEED = 'sloop'
-const MESSAGES = 100
-const AUTHORS = 1
+const SEED = "sloop";
+const MESSAGES = 100;
+const AUTHORS = 1;
 // run each test x times
-const ITERATIONS = 10
+const ITERATIONS = 10;
 
-test('generate fixture with flumelog-offset', (t) => {
+test("generate fixture with flumelog-offset", (t) => {
   generateFixture({
     outputDir: dir,
     seed: SEED,
@@ -43,109 +43,109 @@ test('generate fixture with flumelog-offset', (t) => {
     authors: AUTHORS,
     slim: true,
   }).then(() => {
-    t.true(fs.existsSync(oldLogPath), 'log.offset was created')
-    t.end()
-  })
-})
-    
-test('move flumelog-offset to async-log', (t) => {
+    t.true(fs.existsSync(oldLogPath), "log.offset was created");
+    t.end();
+  });
+});
+
+test("move flumelog-offset to async-log", (t) => {
   copy(oldLogPath, newLogPath, (err) => {
-    if (err) t.fail(err)
+    if (err) t.fail(err);
     setTimeout(() => {
-      t.true(fs.existsSync(newLogPath), 'log.bipf was created')
-      t.end()
-    }, 4000)
-  })
-})
+      t.true(fs.existsSync(newLogPath), "log.bipf was created");
+      t.end();
+    }, 4000);
+  });
+});
 
-let raf
-let db
+let raf;
+let db;
 
-test('core indexes', (t) => {
-  const start = Date.now()
-  raf = Log(newLogPath, { blockSize: 64 * 1024 })
-  rimraf.sync(indexesDir)
-  db = JITDB(raf, indexesDir)
+test("core indexes", (t) => {
+  const start = Date.now();
+  raf = Log(newLogPath, { blockSize: 64 * 1024 });
+  rimraf.sync(indexesDir);
+  db = JITDB(raf, indexesDir);
   db.onReady(() => {
-    const duration = Date.now() - start
-    t.pass(`duration: ${duration}ms`)
-    t.end()
-  })
-})
+    const duration = Date.now() - start;
+    t.pass(`duration: ${duration}ms`);
+    t.end();
+  });
+});
 // batch verification of signatures for an array of messages
-test('verifySignatures', (t) => {
+test("verifySignatures", (t) => {
   db.onReady(() => {
     query(
       fromDB(db),
       toCallback((err, msgs) => {
-        if (err) t.fail(err)
+        if (err) t.fail(err);
         var i;
         var totalDuration = 0;
         for (i = 0; i < ITERATIONS; i++) {
-          const start = Date.now()
-          validate.verifySignatures(msgs)
-          const duration = Date.now() - start
-          totalDuration += duration
-          t.pass(`verified ${MESSAGES} message signatures in ${duration} ms`)
+          const start = Date.now();
+          validate.verifySignatures(msgs);
+          const duration = Date.now() - start;
+          totalDuration += duration;
+          t.pass(`verified ${MESSAGES} message signatures in ${duration} ms`);
         }
-        avgDuration = totalDuration / ITERATIONS
-        console.log(`average duration: ${avgDuration} ms`)
-        t.end()
+        avgDuration = totalDuration / ITERATIONS;
+        console.log(`average duration: ${avgDuration} ms`);
+        t.end();
       })
-    )
-  })
-})
+    );
+  });
+});
 // batch verification and validation for an array of messages
-test('validateBatch', (t) => {
+test("validateBatch", (t) => {
   db.onReady(() => {
     query(
       fromDB(db),
       toCallback((err, msgs) => {
-        if (err) t.fail(err)
+        if (err) t.fail(err);
         var i;
         var totalDuration = 0;
         for (i = 0; i < ITERATIONS; i++) {
           // validate array of successive messages from a feed
-          const start = Date.now()
-          validate.validateBatch(msgs)
-          const duration = Date.now() - start
-          totalDuration += duration
-          t.pass(`validated ${MESSAGES} messages in ${duration} ms`)
+          const start = Date.now();
+          validate.validateBatch(msgs);
+          const duration = Date.now() - start;
+          totalDuration += duration;
+          t.pass(`validated ${MESSAGES} messages in ${duration} ms`);
         }
-        avgDuration = totalDuration / ITERATIONS
-        console.log(`average duration: ${avgDuration} ms`)
-        t.end()
+        avgDuration = totalDuration / ITERATIONS;
+        console.log(`average duration: ${avgDuration} ms`);
+        t.end();
       })
-    )
-  })
-})
-test('appendKVT (legacy validation)', (t) => {
+    );
+  });
+});
+test("appendKVT (legacy validation)", (t) => {
   db.onReady(() => {
     query(
       fromDB(db),
       toCallback((err, msgs) => {
-        if (err) t.fail(err)
+        if (err) t.fail(err);
         var i;
         var totalDuration = 0;
         for (i = 0; i < ITERATIONS; i++) {
-          var hmac_key = null
-          var state = legacyValidate.initial()
-          const start = Date.now()
+          var hmac_key = null;
+          var state = legacyValidate.initial();
+          const start = Date.now();
           msgs.forEach(function (msg) {
             try {
-              state = legacyValidate.appendKVT(state, hmac_key, msg)
+              state = legacyValidate.appendKVT(state, hmac_key, msg);
             } catch (err) {
-              console.log(err)
+              console.log(err);
             }
-          })
-          const duration = Date.now() - start
-          totalDuration += duration
-          t.pass(`validated ${MESSAGES} messages in ${duration} ms`)
+          });
+          const duration = Date.now() - start;
+          totalDuration += duration;
+          t.pass(`validated ${MESSAGES} messages in ${duration} ms`);
         }
-        avgDuration = totalDuration / ITERATIONS
-        console.log(`average duration: ${avgDuration} ms`)
-        t.end()
+        avgDuration = totalDuration / ITERATIONS;
+        console.log(`average duration: ${avgDuration} ms`);
+        t.end();
       })
-    )
-  })
-})
+    );
+  });
+});
