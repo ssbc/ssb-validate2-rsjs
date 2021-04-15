@@ -2,7 +2,7 @@
   "name": "ssb-validate2-rsjs",
   "version": "0.1.0",
   "description": "Cryptographic validation of Scuttlebutt messages in the form of Rust bindings.",
-  "main": "lib/index.js",
+  "main": "index.js",
   "repository": {
     "type": "git",
     "url": "https://github.com/ssb-ngi-pointer/ssb-validate2-rsjs"
