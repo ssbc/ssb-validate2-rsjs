@@ -20,20 +20,24 @@ npm it
 
 The build process creates bindings in `./dist/index.node`.
 
+If you wish to rebuild the bindings after making changes to the code, use the `nj-cli` tool:
+
+`nj-cli build --release`
+
 ## Usage
 
 ```javascript
-const validate = require('./dist');
+const validate = require('ssb-validate2-rsjs');
 
 // Verify signatures for an array of messages
-validate.verifySignatures(msgs)
+validate.verifySignatures(msgs);
 
 // Validate an array of messages by a single author
 // Note: assumes msgs[0].sequence == 1 (ie. `previous` == null)
-validate.validateBatch(msgs)
+validate.validateBatch(msgs);
 
 // Validate an array of messages by a single author (includes `previous`)
-validate.validateBatch(msgs, previous)
+validate.validateBatch(msgs, previous);
 ```
 
 See `test/test.js` in this repo for in-context example usage (uses [ssb-fixtures](https://github.com/ssb-ngi-pointer/ssb-fixtures) and [jitdb](https://github.com/ssb-ngi-pointer/jitdb)).
@@ -61,6 +65,8 @@ cd ssb-validate2-rsjs
 # Run benchmarks
 node test/perf
 ```
+
+The default values for the performance benchmarks are 100 messages from 1 author, for a total of 10 iterations. These value constants can be changed in `test/perf.js`.
 
 ## License
 
