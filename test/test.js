@@ -1,4 +1,4 @@
-const validate = require("../.");
+const validate = require("../dist");
 const test = require("tape");
 const fs = require("fs");
 const path = require("path");
@@ -93,8 +93,11 @@ test("batch verification of message signatures", (t) => {
       fromDB(db),
       toCallback((err, msgs) => {
         if (err) t.fail(err);
+        const jsonMsgs = msgs.map((msg) => {
+          return JSON.stringify(msg, null, 2);
+        });
         // attempt verification of all messages
-        t.true(validate.verifySignatures(msgs), "success");
+        t.true(validate.verifySignatures(jsonMsgs), "success");
         t.pass(`validated ${MESSAGES} messages`);
         t.end();
       })
@@ -103,7 +106,10 @@ test("batch verification of message signatures", (t) => {
 });
 test("verification of single message signature (valid)", (t) => {
   let msgs = [validMsg];
-  t.true(validate.verifySignatures(msgs), "success");
+  const jsonMsgs = msgs.map((msg) => {
+    return JSON.stringify(msg, null, 2);
+  });
+  t.true(validate.verifySignatures(jsonMsgs), "success");
   t.pass(`validated ${MESSAGES} messages`);
   t.end();
 });
@@ -112,7 +118,10 @@ test("verification of single message signature (invalid)", (t) => {
   invalidMsg.value.content.following = false;
   let msgs = [invalidMsg];
   try {
-    validate.verifySignatures(msgs);
+    const jsonMsgs = msgs.map((msg) => {
+      return JSON.stringify(msg, null, 2);
+    });
+    validate.verifySignatures(jsonMsgs);
     t.fail("should have thrown");
   } catch (err) {
     t.match(
@@ -129,8 +138,11 @@ test("batch validation of full feed", (t) => {
       fromDB(db),
       toCallback((err, msgs) => {
         if (err) t.fail(err);
+        const jsonMsgs = msgs.map((msg) => {
+          return JSON.stringify(msg, null, 2);
+        });
         // attempt validation of all messages (assume `previous` is null)
-        t.true(validate.validateBatch(msgs), "success");
+        t.true(validate.validateBatch(jsonMsgs), "success");
         t.pass(`validated ${MESSAGES} messages`);
         t.end();
       })
@@ -145,8 +157,12 @@ test("batch validation of partial feed", (t) => {
         if (err) t.fail(err);
         // shift first msg into `previous`
         previous = msgs.shift();
+        const jsonPrevious = JSON.stringify(previous, null, 2);
+        const jsonMsgs = msgs.map((msg) => {
+          return JSON.stringify(msg, null, 2);
+        });
         // attempt validation of all messages
-        t.true(validate.validateBatch(msgs, previous), "success");
+        t.true(validate.validateBatch(jsonMsgs, jsonPrevious), "success");
         t.pass(`validated ${MESSAGES} messages`);
         t.end();
       })
@@ -162,8 +178,11 @@ test("batch validation of partial feed without `previous`", (t) => {
         // shift first msg into `previous`
         previous = msgs.shift();
         try {
+          const jsonMsgs = msgs.map((msg) => {
+            return JSON.stringify(msg, null, 2);
+          });
           // attempt validation of all messages without `previous`
-          validate.validateBatch(msgs);
+          validate.validateBatch(jsonMsgs);
           t.fail("should have thrown");
         } catch (err) {
           t.match(
