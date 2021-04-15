@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: AGPL-3.0-only
+
 use node_bindgen::core::NjError;
 use node_bindgen::derive::node_bindgen;
 use ssb_validate::{par_validate_message_hash_chain_of_feed, validate_message_hash_chain};
