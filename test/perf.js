@@ -30,7 +30,7 @@ rimraf.sync(dir);
 mkdirp.sync(dir);
 
 const SEED = "sloop";
-const MESSAGES = 10000;
+const MESSAGES = 100;
 const AUTHORS = 1;
 // run each test x times
 const ITERATIONS = 10;
