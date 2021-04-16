@@ -1,17 +1,14 @@
 {
-  "name": "ssb-validate2-neon",
+  "name": "ssb-validate2-rsjs",
   "version": "0.1.0",
-  "description": "Cryptographic validation of Scuttlebutt messages in the form of Neon bindings.",
-  "main": "lib/index.js",
+  "description": "Cryptographic validation of Scuttlebutt messages in the form of Rust bindings.",
+  "main": "index.js",
   "repository": {
     "type": "git",
-    "url": "https://github.com/mycognosist/ssb-validate2-neon"
+    "url": "https://github.com/ssb-ngi-pointer/ssb-validate2-rsjs"
   },
   "author": "Andrew Reid <glyph@mycelial.technology>",
-  "license": "LGPL-3.0",
-  "dependencies": {
-    "neon-cli": "^0.8.0"
-  },
+  "license": "AGPL-3.0",
   "devDependencies": {
     "async-append-only-log": "^3.0.8",
     "jitdb": "^3.0.2",
@@ -20,12 +17,11 @@
     "rimraf": "^3.0.2",
     "ssb-fixtures": "^2.2.0",
     "ssb-validate": "^4.1.4",
-    "ssb-validation-dataset": "^1.2.1",
     "tap-spec": "^5.0.0",
     "tape": "^5.2.2"
   },
   "scripts": {
-    "install": "neon build",
+    "install": "nj-cli build --release",
     "test": "tape test/*.js | tap-spec",
     "format-code": "prettier --write \"test/*.js\""
   }

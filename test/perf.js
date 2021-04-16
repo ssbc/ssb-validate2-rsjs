@@ -1,4 +1,4 @@
-const validate = require("../.");
+const validate = require("../dist");
 const legacyValidate = require("ssb-validate");
 const test = require("tape");
 const fs = require("fs");
@@ -72,6 +72,7 @@ test("core indexes", (t) => {
     t.end();
   });
 });
+
 // batch verification of signatures for an array of messages
 test("verifySignatures", (t) => {
   db.onReady(() => {
@@ -83,7 +84,10 @@ test("verifySignatures", (t) => {
         var totalDuration = 0;
         for (i = 0; i < ITERATIONS; i++) {
           const start = Date.now();
-          validate.verifySignatures(msgs);
+          const jsonMsgs = msgs.map((msg) => {
+            return JSON.stringify(msg, null, 2);
+          });
+          validate.verifySignatures(jsonMsgs);
           const duration = Date.now() - start;
           totalDuration += duration;
           t.pass(`verified ${MESSAGES} message signatures in ${duration} ms`);
@@ -95,6 +99,7 @@ test("verifySignatures", (t) => {
     );
   });
 });
+
 // batch verification and validation for an array of messages
 test("validateBatch", (t) => {
   db.onReady(() => {
@@ -107,7 +112,10 @@ test("validateBatch", (t) => {
         for (i = 0; i < ITERATIONS; i++) {
           // validate array of successive messages from a feed
           const start = Date.now();
-          validate.validateBatch(msgs);
+          const jsonMsgs = msgs.map((msg) => {
+            return JSON.stringify(msg, null, 2);
+          });
+          validate.validateBatch(jsonMsgs);
           const duration = Date.now() - start;
           totalDuration += duration;
           t.pass(`validated ${MESSAGES} messages in ${duration} ms`);
@@ -119,6 +127,7 @@ test("validateBatch", (t) => {
     );
   });
 });
+
 test("appendKVT (legacy validation)", (t) => {
   db.onReady(() => {
     query(

@@ -1,9 +1,8 @@
 test_results
 notes
 goals
-native/target
-native/index.node
-native/artifacts.json
+/target
+/dist
 **/*~
 **/node_modules
 **/.DS_Store
