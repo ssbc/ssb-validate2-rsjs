@@ -38,6 +38,9 @@ validate.validateBatch(msgs);
 
 // Validate an array of messages by a single author (includes `previous`)
 validate.validateBatch(msgs, previous);
+
+// Validate an array of out-of-order messages by a single author
+validate.validateOooBatch(msgs);
 ```
 
 See `test/test.js` in this repo for in-context example usage (uses [ssb-fixtures](https://github.com/ssb-ngi-pointer/ssb-fixtures) and [jitdb](https://github.com/ssb-ngi-pointer/jitdb)).
