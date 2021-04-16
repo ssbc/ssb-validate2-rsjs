@@ -1854,6 +1854,7 @@ dependencies = [
 [[package]]
 name = "ssb-validate"
 version = "1.0.1"
+source = "git+https://github.com/mycognosist/ssb-validate?branch=out_of_order#426fcd72ff925ac9d5708a809d8f2619c2f1943a"
 dependencies = [
  "rayon",
  "serde",
