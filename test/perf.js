@@ -127,7 +127,34 @@ test("validateBatch", (t) => {
     );
   });
 });
-
+// batch verification and validation for an array of out-of-order messages
+test("validateOooBatch", (t) => {
+  db.onReady(() => {
+    query(
+      fromDB(db),
+      toCallback((err, msgs) => {
+        if (err) t.fail(err);
+        var i;
+        var totalDuration = 0;
+        for (i = 0; i < ITERATIONS; i++) {
+          const start = Date.now();
+          const jsonMsgs = msgs.map((msg) => {
+            return JSON.stringify(msg, null, 2);
+          });
+          // shuffle array of msgs to generate out-of-order state
+          jsonMsgs.sort(() => Math.random() - 0.5);
+          validate.validateOooBatch(jsonMsgs);
+          const duration = Date.now() - start;
+          totalDuration += duration;
+          t.pass(`validated ${MESSAGES} messages in ${duration} ms`);
+        }
+        avgDuration = totalDuration / ITERATIONS;
+        console.log(`average duration: ${avgDuration} ms`);
+        t.end();
+      })
+    );
+  });
+});
 test("appendKVT (legacy validation)", (t) => {
   db.onReady(() => {
     query(

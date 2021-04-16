@@ -104,6 +104,25 @@ test("batch verification of message signatures", (t) => {
     );
   });
 });
+test("batch verification of out-of-order message signatures", (t) => {
+  db.onReady(() => {
+    query(
+      fromDB(db),
+      toCallback((err, msgs) => {
+        if (err) t.fail(err);
+        const jsonMsgs = msgs.map((msg) => {
+          return JSON.stringify(msg, null, 2);
+        });
+        // shuffle the messages (generate out-of-order state)
+        jsonMsgs.sort(() => Math.random() - 0.5);
+        // attempt verification of all messages
+        t.true(validate.verifySignatures(jsonMsgs), "success");
+        t.pass(`validated ${MESSAGES} messages`);
+        t.end();
+      })
+    );
+  });
+});
 test("verification of single message signature (valid)", (t) => {
   let msgs = [validMsg];
   const jsonMsgs = msgs.map((msg) => {
@@ -149,13 +168,34 @@ test("batch validation of full feed", (t) => {
     );
   });
 });
-test("batch validation of partial feed", (t) => {
+test("batch validation of partial feed (previous seq == 1)", (t) => {
   db.onReady(() => {
     query(
       fromDB(db),
       toCallback((err, msgs) => {
         if (err) t.fail(err);
         // shift first msg into `previous`
+        previous = msgs.shift();
+        const jsonPrevious = JSON.stringify(previous, null, 2);
+        const jsonMsgs = msgs.map((msg) => {
+          return JSON.stringify(msg, null, 2);
+        });
+        // attempt validation of all messages
+        t.true(validate.validateBatch(jsonMsgs, jsonPrevious), "success");
+        t.pass(`validated ${MESSAGES} messages`);
+        t.end();
+      })
+    );
+  });
+});
+test("batch validation of partial feed (previous seq > 1)", (t) => {
+  db.onReady(() => {
+    query(
+      fromDB(db),
+      toCallback((err, msgs) => {
+        if (err) t.fail(err);
+        // shift first msg into `previous`
+        first = msgs.shift();
         previous = msgs.shift();
         const jsonPrevious = JSON.stringify(previous, null, 2);
         const jsonMsgs = msgs.map((msg) => {
@@ -192,6 +232,28 @@ test("batch validation of partial feed without `previous`", (t) => {
           );
           t.end();
         }
+      })
+    );
+  });
+});
+test("batch validation of partial feed with out-of-order messages", (t) => {
+  db.onReady(() => {
+    query(
+      fromDB(db),
+      toCallback((err, msgs) => {
+        if (err) t.fail(err);
+        // shift first msg into `previous`
+        previous = msgs.shift();
+        const jsonPrevious = JSON.stringify(previous, null, 2);
+        const jsonMsgs = msgs.map((msg) => {
+          return JSON.stringify(msg, null, 2);
+        });
+        // shuffle the messages (generate out-of-order state)
+        jsonMsgs.sort(() => Math.random() - 0.5);
+        // attempt validation of all messages
+        t.true(validate.validateOooBatch(jsonMsgs, jsonPrevious), "success");
+        t.pass(`validated ${MESSAGES} messages`);
+        t.end();
       })
     );
   });
