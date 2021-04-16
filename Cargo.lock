@@ -1854,8 +1854,6 @@ dependencies = [
 [[package]]
 name = "ssb-validate"
 version = "1.0.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "de800f46e6afdcbf6261b661e34390b870312110d3a635e9ad6cb0a2e92147da"
 dependencies = [
  "rayon",
  "serde",
