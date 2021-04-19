@@ -40,24 +40,22 @@ validate.validateBatch(msgs);
 validate.validateBatch(msgs, previous);
 
 // Validate an array of out-of-order messages by a single author
-validate.validateOooBatch(msgs);
+validate.validateOOOBatch(msgs);
 ```
 
 See `test/test.js` in this repo for in-context example usage (uses [ssb-fixtures](https://github.com/ssb-ngi-pointer/ssb-fixtures) and [jitdb](https://github.com/ssb-ngi-pointer/jitdb)).
 
 ## Behaviour
 
-The `msgs` argument must be in the form of an array of stringified message objects. The exact command used to stringify each message is:
-
-```javascript
-JSON.stringify(msg, null, 2);
-```
+The `msgs` argument must always be in the form of an array of message objects.
 
 The `previous` argument for `validateBatch()` is optional. Calling the function without `previous` is the equivalent of passing `previous` as `null`.
 
-Both `verifySignatures()` and `validateBatch()` return `true` on success. In the case of a failure in verification or validation, both functions will return immediately with detailed information in the error message (currently includes the reason for failure and the full message which caused the failure).
+All three functions (`verifySignatures()`, `validateBatch()` and `validateOOOBatch()`) return `true` on success. In the case of a failure in verification or validation, these functions will return immediately with detailed information in the error message (currently includes the reason for failure and the full message which caused the failure).
 
-Note that `validateBatch()` performs signature verification _and_ full message validation.
+Note that `validateBatch()` and `validateOOOBatch()` perform signature verification _and_ full message validation.
+
+The `validateOOOBatch()` function does not perform checks for ascending sequence number (ie. if `sequence` of the current message equals `sequence` of `previous` plus one), nor does it validate the hash of the `previous` message against the value stored in `previous` of the current message. However, validation of the `author` field is performed (ie. `author` of `previous` message must match the `author` of the current message).
 
 ## Performance Benchmarks
 
