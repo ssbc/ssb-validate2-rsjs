@@ -86,7 +86,7 @@ fn verify_validate_messages(array: Vec<String>, previous: Option<String>) -> Res
     }
 }
 
-#[node_bindgen(name = "validateOooBatch")]
+#[node_bindgen(name = "validateOOOBatch")]
 fn verify_validate_out_of_order_messages(
     array: Vec<String>,
     previous: Option<String>,
