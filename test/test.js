@@ -210,25 +210,7 @@ test("batch validation of partial feed without `previous`", (t) => {
     );
   });
 });
-test("batch validation of out-of-order messages with `previous`", (t) => {
-  db.onReady(() => {
-    query(
-      fromDB(db),
-      toCallback((err, msgs) => {
-        if (err) t.fail(err);
-        // shift first msg into `previous`
-        previous = msgs.shift();
-        // shuffle the messages (generate out-of-order state)
-        msgs.sort(() => Math.random() - 0.5);
-        // attempt validation of all messages
-        t.true(validate.validateOOOBatch(msgs, previous), "success");
-        t.pass(`validated ${MESSAGES} messages`);
-        t.end();
-      })
-    );
-  });
-});
-test("batch validation of out-of-order messages without `previous`", (t) => {
+test("batch validation of out-of-order messages", (t) => {
   db.onReady(() => {
     query(
       fromDB(db),

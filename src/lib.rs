@@ -87,20 +87,12 @@ fn verify_validate_messages(array: Vec<String>, previous: Option<String>) -> Res
 }
 
 #[node_bindgen(name = "validateOOOBatch")]
-fn verify_validate_out_of_order_messages(
-    array: Vec<String>,
-    previous: Option<String>,
-) -> Result<bool, NjError> {
+fn verify_validate_out_of_order_messages(array: Vec<String>) -> Result<bool, NjError> {
     let mut msgs = Vec::new();
     for msg in array {
         let msg_bytes = msg.into_bytes();
         msgs.push(msg_bytes)
     }
-
-    let previous_msg = match previous {
-        Some(msg) => Some(msg.into_bytes()),
-        None => None,
-    };
 
     // attempt batch verficiation and match on error to find invalid message
     match par_verify_messages(&msgs, None) {
@@ -117,12 +109,12 @@ fn verify_validate_out_of_order_messages(
     };
 
     // attempt batch validation and match on error to find invalid message
-    match par_validate_ooo_message_hash_chain_of_feed(&msgs, previous_msg.as_ref()) {
+    match par_validate_ooo_message_hash_chain_of_feed(&msgs) {
         Ok(_) => Ok(true),
         Err(e) => {
             let invalid_message = &msgs
                 .iter()
-                .find(|msg| validate_ooo_message_hash_chain(msg, previous_msg.as_ref()).is_err())
+                .find(|msg| validate_ooo_message_hash_chain::<_, &[u8]>(msg, None).is_err())
                 .unwrap();
             let invalid_msg_str = std::str::from_utf8(invalid_message).unwrap();
             let err_msg = format!("found invalid message: {}: {}", e, invalid_msg_str);
