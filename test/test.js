@@ -1,4 +1,4 @@
-const validate = require("../dist");
+const validate = require("../.");
 const test = require("tape");
 const fs = require("fs");
 const path = require("path");
@@ -93,11 +93,24 @@ test("batch verification of message signatures", (t) => {
       fromDB(db),
       toCallback((err, msgs) => {
         if (err) t.fail(err);
-        const jsonMsgs = msgs.map((msg) => {
-          return JSON.stringify(msg, null, 2);
-        });
         // attempt verification of all messages
-        t.true(validate.verifySignatures(jsonMsgs), "success");
+        t.true(validate.verifySignatures(msgs), "success");
+        t.pass(`validated ${MESSAGES} messages`);
+        t.end();
+      })
+    );
+  });
+});
+test("batch verification of out-of-order message signatures", (t) => {
+  db.onReady(() => {
+    query(
+      fromDB(db),
+      toCallback((err, msgs) => {
+        if (err) t.fail(err);
+        // shuffle the messages (generate out-of-order state)
+        msgs.sort(() => Math.random() - 0.5);
+        // attempt verification of all messages
+        t.true(validate.verifySignatures(msgs), "success");
         t.pass(`validated ${MESSAGES} messages`);
         t.end();
       })
@@ -106,10 +119,7 @@ test("batch verification of message signatures", (t) => {
 });
 test("verification of single message signature (valid)", (t) => {
   let msgs = [validMsg];
-  const jsonMsgs = msgs.map((msg) => {
-    return JSON.stringify(msg, null, 2);
-  });
-  t.true(validate.verifySignatures(jsonMsgs), "success");
+  t.true(validate.verifySignatures(msgs), "success");
   t.pass(`validated ${MESSAGES} messages`);
   t.end();
 });
@@ -118,10 +128,7 @@ test("verification of single message signature (invalid)", (t) => {
   invalidMsg.value.content.following = false;
   let msgs = [invalidMsg];
   try {
-    const jsonMsgs = msgs.map((msg) => {
-      return JSON.stringify(msg, null, 2);
-    });
-    validate.verifySignatures(jsonMsgs);
+    validate.verifySignatures(msgs);
     t.fail("should have thrown");
   } catch (err) {
     t.match(
@@ -138,18 +145,15 @@ test("batch validation of full feed", (t) => {
       fromDB(db),
       toCallback((err, msgs) => {
         if (err) t.fail(err);
-        const jsonMsgs = msgs.map((msg) => {
-          return JSON.stringify(msg, null, 2);
-        });
         // attempt validation of all messages (assume `previous` is null)
-        t.true(validate.validateBatch(jsonMsgs), "success");
+        t.true(validate.validateBatch(msgs), "success");
         t.pass(`validated ${MESSAGES} messages`);
         t.end();
       })
     );
   });
 });
-test("batch validation of partial feed", (t) => {
+test("batch validation of partial feed (previous seq == 1)", (t) => {
   db.onReady(() => {
     query(
       fromDB(db),
@@ -157,12 +161,26 @@ test("batch validation of partial feed", (t) => {
         if (err) t.fail(err);
         // shift first msg into `previous`
         previous = msgs.shift();
-        const jsonPrevious = JSON.stringify(previous, null, 2);
-        const jsonMsgs = msgs.map((msg) => {
-          return JSON.stringify(msg, null, 2);
-        });
         // attempt validation of all messages
-        t.true(validate.validateBatch(jsonMsgs, jsonPrevious), "success");
+        t.true(validate.validateBatch(msgs, previous), "success");
+        t.pass(`validated ${MESSAGES} messages`);
+        t.end();
+      })
+    );
+  });
+});
+test("batch validation of partial feed (previous seq > 1)", (t) => {
+  db.onReady(() => {
+    query(
+      fromDB(db),
+      toCallback((err, msgs) => {
+        if (err) t.fail(err);
+        // skip first msg in the array
+	first = msgs.shift();
+        // shift second msg into `previous`
+        previous = msgs.shift();
+        // attempt validation of all messages
+        t.true(validate.validateBatch(msgs, previous), "success");
         t.pass(`validated ${MESSAGES} messages`);
         t.end();
       })
@@ -178,11 +196,8 @@ test("batch validation of partial feed without `previous`", (t) => {
         // shift first msg into `previous`
         previous = msgs.shift();
         try {
-          const jsonMsgs = msgs.map((msg) => {
-            return JSON.stringify(msg, null, 2);
-          });
           // attempt validation of all messages without `previous`
-          validate.validateBatch(jsonMsgs);
+          validate.validateBatch(msgs);
           t.fail("should have thrown");
         } catch (err) {
           t.match(
@@ -192,6 +207,22 @@ test("batch validation of partial feed without `previous`", (t) => {
           );
           t.end();
         }
+      })
+    );
+  });
+});
+test("batch validation of out-of-order messages", (t) => {
+  db.onReady(() => {
+    query(
+      fromDB(db),
+      toCallback((err, msgs) => {
+        if (err) t.fail(err);
+        // shuffle the messages (generate out-of-order state)
+        msgs.sort(() => Math.random() - 0.5);
+        // attempt validation of all messages
+        t.true(validate.validateOOOBatch(msgs), "success");
+        t.pass(`validated ${MESSAGES} messages`);
+        t.end();
       })
     );
   });
