@@ -48,6 +48,11 @@ fn verify_messages(array: Vec<String>) -> Result<bool, NjError> {
 fn verify_validate_messages(array: Vec<String>, previous: Option<String>) -> Result<bool, NjError> {
     let mut msgs = Vec::new();
     for msg in array {
+        // ensure the encoded message is less than 8192 code unit (utf-16)
+        if msg.encode_utf16().count() > 8192 {
+            let err_msg = format!("found invalid message: encoded message must not be larger than 8192 code units (utf-16): {}", msg);
+            return Err(NjError::Other(err_msg));
+        }
         let msg_bytes = msg.into_bytes();
         msgs.push(msg_bytes)
     }
@@ -90,6 +95,10 @@ fn verify_validate_messages(array: Vec<String>, previous: Option<String>) -> Res
 fn verify_validate_out_of_order_messages(array: Vec<String>) -> Result<bool, NjError> {
     let mut msgs = Vec::new();
     for msg in array {
+        if msg.encode_utf16().count() > 8192 {
+            let err_msg = format!("found invalid message: encoded message must not be larger than 8192 code units (utf-16): {}", msg);
+            return Err(NjError::Other(err_msg));
+        }
         let msg_bytes = msg.into_bytes();
         msgs.push(msg_bytes)
     }

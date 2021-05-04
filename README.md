@@ -2,7 +2,7 @@
 
 Cryptographic validation of Scuttlebutt messages in the form of Rust bindings for Node.js.
 
-Perform batch verification and validation of SSB messages using [ssb-verify-signatures](https://crates.io/crates/ssb-verify-signatures) and [ssb-validate](https://crates.io/crates/ssb-validate) from the [Sunrise Choir](https://github.com/sunrise-choir).
+Perform batch verification and validation of SSB messages using [ssb-verify-signatures](https://crates.io/crates/ssb-verify-signatures) and [ssb-validate](https://github.com/mycognosist/ssb-validate) from the [Sunrise Choir](https://github.com/sunrise-choir).
 
 The [node-bindgen](https://github.com/infinyon/node-bindgen) crate is currently used to generate the bindings from Rust code.
 
