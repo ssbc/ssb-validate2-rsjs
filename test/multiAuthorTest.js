@@ -30,7 +30,7 @@ mkdirp.sync(dir);
 
 const SEED = "sloop";
 const MESSAGES = 10;
-const AUTHORS = 22;
+const AUTHORS = 2;
 
 test("generate fixture with flumelog-offset", (t) => {
   generateFixture({

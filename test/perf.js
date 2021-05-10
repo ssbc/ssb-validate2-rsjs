@@ -121,6 +121,7 @@ test("validateBatch", (t) => {
     );
   });
 });
+
 // batch verification and validation for an array of out-of-order messages
 test("validateOOOBatch", (t) => {
   db.onReady(() => {
@@ -146,6 +147,7 @@ test("validateOOOBatch", (t) => {
     );
   });
 });
+
 test("appendKVT (legacy validation)", (t) => {
   db.onReady(() => {
     query(
