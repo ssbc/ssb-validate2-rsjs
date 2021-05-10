@@ -28,6 +28,15 @@ const validateOOOBatch = (msgs) => {
   return v.validateOOOBatch(jsonMsgs);
 };
 
+const validateMultiAuthorBatch = (msgs) => {
+  if (!Array.isArray(msgs)) throw new Error('input must be an array of message objects')
+  const jsonMsgs = msgs.map((msg) => {
+    return JSON.stringify(msg, null, 2);
+  });
+  return v.validateMultiAuthorBatch(jsonMsgs);
+};
+
 module.exports.verifySignatures = verifySignatures;
 module.exports.validateBatch = validateBatch;
 module.exports.validateOOOBatch = validateOOOBatch;
+module.exports.validateMultiAuthorBatch = validateMultiAuthorBatch;
