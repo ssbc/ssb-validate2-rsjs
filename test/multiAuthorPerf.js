@@ -20,7 +20,7 @@ const seekType = require("jitdb/test/helpers");
 const copy = require("jitdb/copy-json-to-bipf-async");
 
 // define directory and paths
-const dir = "/tmp/validate-benchmark";
+const dir = "/tmp/validate-multi-benchmark";
 const oldLogPath = path.join(dir, "flume", "log.offset");
 const newLogPath = path.join(dir, "flume", "log.bipf");
 const indexesDir = path.join(dir, "indexes");
