@@ -3,8 +3,9 @@
 use node_bindgen::core::NjError;
 use node_bindgen::derive::node_bindgen;
 use ssb_validate::{
-    par_validate_message_hash_chain_of_feed, par_validate_ooo_message_hash_chain_of_feed,
-    validate_message_hash_chain, validate_ooo_message_hash_chain,
+    par_validate_message_hash_chain_of_feed, par_validate_multi_author_message_hash_chain_of_feed,
+    par_validate_ooo_message_hash_chain_of_feed, validate_message_hash_chain,
+    validate_multi_author_message_hash_chain, validate_ooo_message_hash_chain,
 };
 use ssb_verify_signatures::{par_verify_messages, verify_message};
 
@@ -37,7 +38,7 @@ fn verify_messages(array: Vec<String>) -> Result<bool, NjError> {
     }
 }
 
-/// Verify signatures and perform validation for an array of messages.
+/// Verify signatures and perform validation for an array of ordered messages by a single author.
 ///
 /// Takes an array of messages as the first argument and an optional previous message as the second
 /// argument. The previous message argument is expected when the array of messages does not start
@@ -48,19 +49,11 @@ fn verify_messages(array: Vec<String>) -> Result<bool, NjError> {
 fn verify_validate_messages(array: Vec<String>, previous: Option<String>) -> Result<bool, NjError> {
     let mut msgs = Vec::new();
     for msg in array {
-        // ensure the encoded message is less than 8192 code unit (utf-16)
-        if msg.encode_utf16().count() > 8192 {
-            let err_msg = format!("found invalid message: encoded message must not be larger than 8192 code units (utf-16): {}", msg);
-            return Err(NjError::Other(err_msg));
-        }
         let msg_bytes = msg.into_bytes();
         msgs.push(msg_bytes)
     }
 
-    let previous_msg = match previous {
-        Some(msg) => Some(msg.into_bytes()),
-        None => None,
-    };
+    let previous_msg = previous.map(|msg| msg.into_bytes());
 
     // attempt batch verficiation and match on error to find invalid message
     match par_verify_messages(&msgs, None) {
@@ -91,14 +84,15 @@ fn verify_validate_messages(array: Vec<String>, previous: Option<String>) -> Res
     }
 }
 
+/// Verify signatures and perform validation for an array of out-of-order messages by a single
+/// author.
+///
+/// Takes an array of messages as the only argument. If verification or validation fails, the
+/// cause of the error is returned along with the offending message.
 #[node_bindgen(name = "validateOOOBatch")]
 fn verify_validate_out_of_order_messages(array: Vec<String>) -> Result<bool, NjError> {
     let mut msgs = Vec::new();
     for msg in array {
-        if msg.encode_utf16().count() > 8192 {
-            let err_msg = format!("found invalid message: encoded message must not be larger than 8192 code units (utf-16): {}", msg);
-            return Err(NjError::Other(err_msg));
-        }
         let msg_bytes = msg.into_bytes();
         msgs.push(msg_bytes)
     }
@@ -124,6 +118,48 @@ fn verify_validate_out_of_order_messages(array: Vec<String>) -> Result<bool, NjE
             let invalid_message = &msgs
                 .iter()
                 .find(|msg| validate_ooo_message_hash_chain::<_, &[u8]>(msg, None).is_err())
+                .unwrap();
+            let invalid_msg_str = std::str::from_utf8(invalid_message).unwrap();
+            let err_msg = format!("found invalid message: {}: {}", e, invalid_msg_str);
+            Err(NjError::Other(err_msg))
+        }
+    }
+}
+
+/// Verify signatures and perform validation for an array of out-of-order messages by multiple
+/// authors.
+///
+/// Takes an array of messages as the only argument. If verification or validation fails, the
+/// cause of the error is returned along with the offending message.
+#[node_bindgen(name = "validateMultiAuthorBatch")]
+fn verify_validate_multi_author_messages(array: Vec<String>) -> Result<bool, NjError> {
+    let mut msgs = Vec::new();
+    for msg in array {
+        let msg_bytes = msg.into_bytes();
+        msgs.push(msg_bytes)
+    }
+
+    // attempt batch verficiation and match on error to find invalid message
+    match par_verify_messages(&msgs, None) {
+        Ok(_) => (),
+        Err(e) => {
+            let invalid_msg = &msgs
+                .iter()
+                .find(|msg| verify_message(msg).is_err())
+                .unwrap();
+            let invalid_msg_str = std::str::from_utf8(invalid_msg).unwrap();
+            let err_msg = format!("found invalid message: {}: {}", e, invalid_msg_str);
+            return Err(NjError::Other(err_msg));
+        }
+    };
+
+    // attempt batch validation and match on error to find invalid message
+    match par_validate_multi_author_message_hash_chain_of_feed(&msgs) {
+        Ok(_) => Ok(true),
+        Err(e) => {
+            let invalid_message = &msgs
+                .iter()
+                .find(|msg| validate_multi_author_message_hash_chain(msg).is_err())
                 .unwrap();
             let invalid_msg_str = std::str::from_utf8(invalid_message).unwrap();
             let err_msg = format!("found invalid message: {}: {}", e, invalid_msg_str);

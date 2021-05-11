@@ -176,7 +176,7 @@ test("batch validation of partial feed (previous seq > 1)", (t) => {
       toCallback((err, msgs) => {
         if (err) t.fail(err);
         // skip first msg in the array
-	first = msgs.shift();
+        first = msgs.shift();
         // shift second msg into `previous`
         previous = msgs.shift();
         // attempt validation of all messages
