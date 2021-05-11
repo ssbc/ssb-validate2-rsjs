@@ -23,7 +23,7 @@ fn verify_messages(array: Vec<String>) -> Result<bool, NjError> {
         msgs.push(msg_bytes)
     }
 
-    // attempt batch verficiation and match on error to find invalid message
+    // attempt batch verification and match on error to find invalid message
     match par_verify_messages(&msgs, None) {
         Ok(_) => Ok(true),
         Err(e) => {
@@ -32,6 +32,39 @@ fn verify_messages(array: Vec<String>) -> Result<bool, NjError> {
                 .find(|msg| verify_message(msg).is_err())
                 .unwrap();
             let invalid_msg_str = std::str::from_utf8(invalid_msg).unwrap();
+            let err_msg = format!("found invalid message: {}: {}", e, invalid_msg_str);
+            Err(NjError::Other(err_msg))
+        }
+    }
+}
+
+/// Verify signature and perform validation for a single message.
+///
+/// Takes a message as the first argument and an optional previous message as the second
+/// argument. The previous message argument is expected when the message to be validated is not the
+/// first in the feed (ie. sequence number != 1 and previous != null). If
+/// verification or validation fails, the cause of the error is returned along with the offending
+/// message.
+#[node_bindgen(name = "validateSingle")]
+fn verify_validate_message(message: String, previous: Option<String>) -> Result<bool, NjError> {
+    let msg_bytes = message.into_bytes();
+    let previous_msg_bytes = previous.map(|msg| msg.into_bytes());
+
+    // attempt verification and match on error to find invalid message
+    match verify_message(&msg_bytes) {
+        Ok(_) => (),
+        Err(e) => {
+            let invalid_msg_str = std::str::from_utf8(&msg_bytes).unwrap();
+            let err_msg = format!("found invalid message: {}: {}", e, invalid_msg_str);
+            return Err(NjError::Other(err_msg));
+        }
+    };
+
+    // attempt validation and match on error to find invalid message
+    match validate_message_hash_chain(&msg_bytes, previous_msg_bytes) {
+        Ok(_) => Ok(true),
+        Err(e) => {
+            let invalid_msg_str = std::str::from_utf8(&msg_bytes).unwrap();
             let err_msg = format!("found invalid message: {}: {}", e, invalid_msg_str);
             Err(NjError::Other(err_msg))
         }
@@ -55,7 +88,7 @@ fn verify_validate_messages(array: Vec<String>, previous: Option<String>) -> Res
 
     let previous_msg = previous.map(|msg| msg.into_bytes());
 
-    // attempt batch verficiation and match on error to find invalid message
+    // attempt batch verification and match on error to find invalid message
     match par_verify_messages(&msgs, None) {
         Ok(_) => (),
         Err(e) => {
@@ -97,7 +130,7 @@ fn verify_validate_out_of_order_messages(array: Vec<String>) -> Result<bool, NjE
         msgs.push(msg_bytes)
     }
 
-    // attempt batch verficiation and match on error to find invalid message
+    // attempt batch verification and match on error to find invalid message
     match par_verify_messages(&msgs, None) {
         Ok(_) => (),
         Err(e) => {
@@ -139,7 +172,7 @@ fn verify_validate_multi_author_messages(array: Vec<String>) -> Result<bool, NjE
         msgs.push(msg_bytes)
     }
 
-    // attempt batch verficiation and match on error to find invalid message
+    // attempt batch verification and match on error to find invalid message
     match par_verify_messages(&msgs, None) {
         Ok(_) => (),
         Err(e) => {

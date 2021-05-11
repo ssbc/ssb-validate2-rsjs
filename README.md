@@ -32,6 +32,13 @@ const validate = require('ssb-validate2-rsjs');
 // Verify signatures for an array of messages
 validate.verifySignatures(msgs);
 
+// Validate a single message
+// Note: assumes msg.sequence == 1 (ie. `previous` == null)
+validate.validateSingle(msg);
+
+// Validate a single message (includes `previous`)
+validate.validateSingle(msg, previous);
+
 // Validate an array of messages by a single author
 // Note: assumes msgs[0].sequence == 1 (ie. `previous` == null)
 validate.validateBatch(msgs);
@@ -50,13 +57,15 @@ See `test/test.js` in this repo for in-context example usage (uses [ssb-fixtures
 
 ## Behaviour
 
+The `msg` and `previous` arguments must always be in the form of message objects.
+
 The `msgs` argument must always be in the form of an array of message objects.
 
-The `previous` argument for `validateBatch()` is optional. Calling the function without `previous` is the equivalent of passing `previous` as `null`.
+The `previous` argument for `validateSingle()` and `validateBatch()` is optional. Calling these functions without `previous` is the equivalent of passing `previous` as `null`.
 
-All four functions (`verifySignatures()`, `validateBatch()`, `validateOOOBatch()` and `validateMultiAuthorBatch()`) return `true` on success. In the case of a failure in verification or validation, these functions will return immediately with detailed information in the error message (currently includes the reason for failure and the full message which caused the failure).
+All five functions (`verifySignatures()`, `validateSingle()`, `validateBatch()`, `validateOOOBatch()` and `validateMultiAuthorBatch()`) return `true` on success. In the case of a failure in verification or validation, these functions will return immediately with detailed information in the error message (currently includes the reason for failure and the full message which caused the failure).
 
-Note that `validateBatch()`, `validateOOOBatch()` and `validateMultiAuthorBatch()` perform signature verification _and_ full message validation.
+Note that `validateSingle()`, `validateBatch()`, `validateOOOBatch()` and `validateMultiAuthorBatch()` perform signature verification _and_ full message validation.
 
 The `validateOOOBatch()` function does not perform checks for ascending sequence number (ie. if `sequence` of the current message equals `sequence` of `previous` plus one), nor does it validate the hash of the `previous` message against the value stored in `previous` of the current message. However, validation of the `author` field is performed (ie. `author` of `previous` message must match the `author` of the current message).
 
