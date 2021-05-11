@@ -10,7 +10,7 @@ const verifySignatures = (msgs) => {
 
 const validateSingle = (msg, previous) => {
   const jsonMsg = JSON.stringify(msg, null, 2);
-  if (previous !== undefined) {
+  if (previous) {
     const jsonPrevious = JSON.stringify(previous, null, 2);
     return v.validateSingle(jsonMsg, jsonPrevious);
   }
@@ -22,7 +22,7 @@ const validateBatch = (msgs, previous) => {
   const jsonMsgs = msgs.map((msg) => {
     return JSON.stringify(msg, null, 2);
   });
-  if (previous !== undefined) {
+  if (previous) {
     const jsonPrevious = JSON.stringify(previous, null, 2);
     return v.validateBatch(jsonMsgs, jsonPrevious);
   }
