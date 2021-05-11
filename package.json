@@ -17,12 +17,11 @@
     "rimraf": "^3.0.2",
     "ssb-fixtures": "^2.2.0",
     "ssb-validate": "^4.1.4",
-    "tap-spec": "^5.0.0",
     "tape": "^5.2.2"
   },
   "scripts": {
     "install": "nj-cli build --release",
-    "test": "tape test/*.js | tap-spec",
+    "test": "tape test/*.js",
     "format-code": "prettier --write \"test/*.js\""
   }
 }
