@@ -38,7 +38,7 @@ fn verify_messages(array: Vec<String>) -> Result<bool, NjError> {
     }
 }
 
-/// Verify signatures and perform validation for an array of messages.
+/// Verify signatures and perform validation for an array of ordered messages by a single author.
 ///
 /// Takes an array of messages as the first argument and an optional previous message as the second
 /// argument. The previous message argument is expected when the array of messages does not start
@@ -53,10 +53,7 @@ fn verify_validate_messages(array: Vec<String>, previous: Option<String>) -> Res
         msgs.push(msg_bytes)
     }
 
-    let previous_msg = match previous {
-        Some(msg) => Some(msg.into_bytes()),
-        None => None,
-    };
+    let previous_msg = previous.map(|msg| msg.into_bytes());
 
     // attempt batch verficiation and match on error to find invalid message
     match par_verify_messages(&msgs, None) {
@@ -87,6 +84,11 @@ fn verify_validate_messages(array: Vec<String>, previous: Option<String>) -> Res
     }
 }
 
+/// Verify signatures and perform validation for an array of out-of-order messages by a single
+/// author.
+///
+/// Takes an array of messages as the only argument. If verification or validation fails, the
+/// cause of the error is returned along with the offending message.
 #[node_bindgen(name = "validateOOOBatch")]
 fn verify_validate_out_of_order_messages(array: Vec<String>) -> Result<bool, NjError> {
     let mut msgs = Vec::new();
@@ -124,6 +126,11 @@ fn verify_validate_out_of_order_messages(array: Vec<String>) -> Result<bool, NjE
     }
 }
 
+/// Verify signatures and perform validation for an array of out-of-order messages by multiple
+/// authors.
+///
+/// Takes an array of messages as the only argument. If verification or validation fails, the
+/// cause of the error is returned along with the offending message.
 #[node_bindgen(name = "validateMultiAuthorBatch")]
 fn verify_validate_multi_author_messages(array: Vec<String>) -> Result<bool, NjError> {
     let mut msgs = Vec::new();
