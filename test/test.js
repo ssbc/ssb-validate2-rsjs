@@ -87,6 +87,7 @@ test("core indexes", (t) => {
     t.end();
   });
 });
+
 test("batch verification of message signatures", (t) => {
   db.onReady(() => {
     query(
@@ -101,6 +102,7 @@ test("batch verification of message signatures", (t) => {
     );
   });
 });
+
 test("batch verification of out-of-order message signatures", (t) => {
   db.onReady(() => {
     query(
@@ -117,12 +119,14 @@ test("batch verification of out-of-order message signatures", (t) => {
     );
   });
 });
+
 test("verification of single message signature (valid)", (t) => {
   let msgs = [validMsg];
   t.true(validate.verifySignatures(msgs), "success");
   t.pass(`validated ${MESSAGES} messages`);
   t.end();
 });
+
 test("verification of single message signature (invalid)", (t) => {
   let invalidMsg = validMsg;
   invalidMsg.value.content.following = false;
@@ -139,6 +143,60 @@ test("verification of single message signature (invalid)", (t) => {
     t.end();
   }
 });
+
+test("validation of first message (`seq` == 1) without `previous`", (t) => {
+  db.onReady(() => {
+    query(
+      fromDB(db),
+      toCallback((err, msgs) => {
+        if (err) t.fail(err);
+        // attempt validation of single message (assume `previous` is null)
+        t.true(validate.validateSingle(msgs[0]), "success");
+        t.pass(`validated ${MESSAGES} messages`);
+        t.end();
+      })
+    );
+  });
+});
+
+test("validation of a single message with `previous`", (t) => {
+  db.onReady(() => {
+    query(
+      fromDB(db),
+      toCallback((err, msgs) => {
+        if (err) t.fail(err);
+        // attempt validation of single message (include previous message)
+        t.true(validate.validateSingle(msgs[1], msgs[0]), "success");
+        t.pass(`validated ${MESSAGES} messages`);
+        t.end();
+      })
+    );
+  });
+});
+
+test("validation of a single message (`seq` > 1) without `previous`", (t) => {
+  db.onReady(() => {
+    query(
+      fromDB(db),
+      toCallback((err, msgs) => {
+        if (err) t.fail(err);
+        try {
+          // attempt validation of a single message without `previous`
+          validate.validateSingle(msgs[3]);
+          t.fail("should have thrown");
+        } catch (err) {
+          t.match(
+            err.message,
+            /The first message of a feed must have seq of 1/,
+            "found invalid message: The first message of a feed must have seq of 1"
+          );
+          t.end();
+        }
+      })
+    );
+  });
+});
+
 test("batch validation of full feed", (t) => {
   db.onReady(() => {
     query(
@@ -153,6 +211,7 @@ test("batch validation of full feed", (t) => {
     );
   });
 });
+
 test("batch validation of partial feed (previous seq == 1)", (t) => {
   db.onReady(() => {
     query(
@@ -169,6 +228,7 @@ test("batch validation of partial feed (previous seq == 1)", (t) => {
     );
   });
 });
+
 test("batch validation of partial feed (previous seq > 1)", (t) => {
   db.onReady(() => {
     query(
@@ -187,6 +247,7 @@ test("batch validation of partial feed (previous seq > 1)", (t) => {
     );
   });
 });
+
 test("batch validation of partial feed without `previous`", (t) => {
   db.onReady(() => {
     query(
@@ -211,6 +272,7 @@ test("batch validation of partial feed without `previous`", (t) => {
     );
   });
 });
+
 test("batch validation of out-of-order messages", (t) => {
   db.onReady(() => {
     query(

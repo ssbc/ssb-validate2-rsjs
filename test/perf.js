@@ -97,6 +97,31 @@ test("verifySignatures", (t) => {
   });
 });
 
+// verification and validation for a single message
+test("validateSingle", (t) => {
+  db.onReady(() => {
+    query(
+      fromDB(db),
+      toCallback((err, msgs) => {
+        if (err) t.fail(err);
+        var i;
+        var totalDuration = 0;
+        for (i = 0; i < ITERATIONS; i++) {
+          // validate a single message (`seq` == 1)
+          const start = Date.now();
+          validate.validateSingle(msgs[0]);
+          const duration = Date.now() - start;
+          totalDuration += duration;
+          t.pass(`validated 1 message in ${duration} ms`);
+        }
+        avgDuration = totalDuration / ITERATIONS;
+        console.log(`average duration: ${avgDuration} ms`);
+        t.end();
+      })
+    );
+  });
+});
+
 // batch verification and validation for an array of messages
 test("validateBatch", (t) => {
   db.onReady(() => {
