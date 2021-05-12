@@ -1,6 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 
-use node_bindgen::core::NjError;
 use node_bindgen::derive::node_bindgen;
 use ssb_validate::{
     par_validate_message_hash_chain_of_feed, par_validate_multi_author_message_hash_chain_of_feed,
@@ -16,7 +15,7 @@ use ssb_verify_signatures::{par_verify_messages, verify_message};
 /// it does not perform full message validation (use `verify_validate_message_array` for complete
 /// verification and validation).
 #[node_bindgen(name = "verifySignatures")]
-fn verify_messages(array: Vec<String>) -> Result<bool, NjError> {
+fn verify_messages(array: Vec<String>) -> Option<String> {
     let mut msgs = Vec::new();
     for msg in array {
         let msg_bytes = msg.into_bytes();
@@ -25,7 +24,7 @@ fn verify_messages(array: Vec<String>) -> Result<bool, NjError> {
 
     // attempt batch verification and match on error to find invalid message
     match par_verify_messages(&msgs, None) {
-        Ok(_) => Ok(true),
+        Ok(_) => None,
         Err(e) => {
             let invalid_msg = &msgs
                 .iter()
@@ -33,7 +32,7 @@ fn verify_messages(array: Vec<String>) -> Result<bool, NjError> {
                 .unwrap();
             let invalid_msg_str = std::str::from_utf8(invalid_msg).unwrap();
             let err_msg = format!("found invalid message: {}: {}", e, invalid_msg_str);
-            Err(NjError::Other(err_msg))
+            Some(err_msg)
         }
     }
 }
@@ -46,7 +45,7 @@ fn verify_messages(array: Vec<String>) -> Result<bool, NjError> {
 /// verification or validation fails, the cause of the error is returned along with the offending
 /// message.
 #[node_bindgen(name = "validateSingle")]
-fn verify_validate_message(message: String, previous: Option<String>) -> Result<bool, NjError> {
+fn verify_validate_message(message: String, previous: Option<String>) -> Option<String> {
     let msg_bytes = message.into_bytes();
     let previous_msg_bytes = previous.map(|msg| msg.into_bytes());
 
@@ -56,17 +55,17 @@ fn verify_validate_message(message: String, previous: Option<String>) -> Result<
         Err(e) => {
             let invalid_msg_str = std::str::from_utf8(&msg_bytes).unwrap();
             let err_msg = format!("found invalid message: {}: {}", e, invalid_msg_str);
-            return Err(NjError::Other(err_msg));
+            return Some(err_msg);
         }
     };
 
     // attempt validation and match on error to find invalid message
     match validate_message_hash_chain(&msg_bytes, previous_msg_bytes) {
-        Ok(_) => Ok(true),
+        Ok(_) => None,
         Err(e) => {
             let invalid_msg_str = std::str::from_utf8(&msg_bytes).unwrap();
             let err_msg = format!("found invalid message: {}: {}", e, invalid_msg_str);
-            Err(NjError::Other(err_msg))
+            Some(err_msg)
         }
     }
 }
@@ -79,7 +78,7 @@ fn verify_validate_message(message: String, previous: Option<String>) -> Result<
 /// verification or validation fails, the cause of the error is returned along with the offending
 /// message.
 #[node_bindgen(name = "validateBatch")]
-fn verify_validate_messages(array: Vec<String>, previous: Option<String>) -> Result<bool, NjError> {
+fn verify_validate_messages(array: Vec<String>, previous: Option<String>) -> Option<String> {
     let mut msgs = Vec::new();
     for msg in array {
         let msg_bytes = msg.into_bytes();
@@ -98,13 +97,13 @@ fn verify_validate_messages(array: Vec<String>, previous: Option<String>) -> Res
                 .unwrap();
             let invalid_msg_str = std::str::from_utf8(invalid_msg).unwrap();
             let err_msg = format!("found invalid message: {}: {}", e, invalid_msg_str);
-            return Err(NjError::Other(err_msg));
+            return Some(err_msg);
         }
     };
 
     // attempt batch validation and match on error to find invalid message
     match par_validate_message_hash_chain_of_feed(&msgs, previous_msg.as_ref()) {
-        Ok(_) => Ok(true),
+        Ok(_) => None,
         Err(e) => {
             let invalid_message = &msgs
                 .iter()
@@ -112,7 +111,7 @@ fn verify_validate_messages(array: Vec<String>, previous: Option<String>) -> Res
                 .unwrap();
             let invalid_msg_str = std::str::from_utf8(invalid_message).unwrap();
             let err_msg = format!("found invalid message: {}: {}", e, invalid_msg_str);
-            Err(NjError::Other(err_msg))
+            Some(err_msg)
         }
     }
 }
@@ -123,7 +122,7 @@ fn verify_validate_messages(array: Vec<String>, previous: Option<String>) -> Res
 /// Takes an array of messages as the only argument. If verification or validation fails, the
 /// cause of the error is returned along with the offending message.
 #[node_bindgen(name = "validateOOOBatch")]
-fn verify_validate_out_of_order_messages(array: Vec<String>) -> Result<bool, NjError> {
+fn verify_validate_out_of_order_messages(array: Vec<String>) -> Option<String> {
     let mut msgs = Vec::new();
     for msg in array {
         let msg_bytes = msg.into_bytes();
@@ -140,13 +139,13 @@ fn verify_validate_out_of_order_messages(array: Vec<String>) -> Result<bool, NjE
                 .unwrap();
             let invalid_msg_str = std::str::from_utf8(invalid_msg).unwrap();
             let err_msg = format!("found invalid message: {}: {}", e, invalid_msg_str);
-            return Err(NjError::Other(err_msg));
+            return Some(err_msg);
         }
     };
 
     // attempt batch validation and match on error to find invalid message
     match par_validate_ooo_message_hash_chain_of_feed(&msgs) {
-        Ok(_) => Ok(true),
+        Ok(_) => None,
         Err(e) => {
             let invalid_message = &msgs
                 .iter()
@@ -154,7 +153,7 @@ fn verify_validate_out_of_order_messages(array: Vec<String>) -> Result<bool, NjE
                 .unwrap();
             let invalid_msg_str = std::str::from_utf8(invalid_message).unwrap();
             let err_msg = format!("found invalid message: {}: {}", e, invalid_msg_str);
-            Err(NjError::Other(err_msg))
+            Some(err_msg)
         }
     }
 }
@@ -165,7 +164,7 @@ fn verify_validate_out_of_order_messages(array: Vec<String>) -> Result<bool, NjE
 /// Takes an array of messages as the only argument. If verification or validation fails, the
 /// cause of the error is returned along with the offending message.
 #[node_bindgen(name = "validateMultiAuthorBatch")]
-fn verify_validate_multi_author_messages(array: Vec<String>) -> Result<bool, NjError> {
+fn verify_validate_multi_author_messages(array: Vec<String>) -> Option<String> {
     let mut msgs = Vec::new();
     for msg in array {
         let msg_bytes = msg.into_bytes();
@@ -182,13 +181,13 @@ fn verify_validate_multi_author_messages(array: Vec<String>) -> Result<bool, NjE
                 .unwrap();
             let invalid_msg_str = std::str::from_utf8(invalid_msg).unwrap();
             let err_msg = format!("found invalid message: {}: {}", e, invalid_msg_str);
-            return Err(NjError::Other(err_msg));
+            return Some(err_msg);
         }
     };
 
     // attempt batch validation and match on error to find invalid message
     match par_validate_multi_author_message_hash_chain_of_feed(&msgs) {
-        Ok(_) => Ok(true),
+        Ok(_) => None,
         Err(e) => {
             let invalid_message = &msgs
                 .iter()
@@ -196,7 +195,7 @@ fn verify_validate_multi_author_messages(array: Vec<String>) -> Result<bool, NjE
                 .unwrap();
             let invalid_msg_str = std::str::from_utf8(invalid_message).unwrap();
             let err_msg = format!("found invalid message: {}: {}", e, invalid_msg_str);
-            Err(NjError::Other(err_msg))
+            Some(err_msg)
         }
     }
 }
