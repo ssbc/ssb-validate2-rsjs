@@ -1,7 +1,7 @@
 const v = require("./dist/index.node");
 
 const verifySignatures = (msgs) => {
-  if (!Array.isArray(msgs)) throw new Error('input must be an array of message objects')
+  if (!Array.isArray(msgs)) return ('input must be an array of message objects')
   const jsonMsgs = msgs.map((msg) => {
     return JSON.stringify(msg, null, 2);
   });
@@ -18,7 +18,7 @@ const validateSingle = (msg, previous) => {
 }
 
 const validateBatch = (msgs, previous) => {
-  if (!Array.isArray(msgs)) throw new Error('input must be an array of message objects')
+  if (!Array.isArray(msgs)) return ('input must be an array of message objects')
   const jsonMsgs = msgs.map((msg) => {
     return JSON.stringify(msg, null, 2);
   });
@@ -30,7 +30,7 @@ const validateBatch = (msgs, previous) => {
 };
 
 const validateOOOBatch = (msgs) => {
-  if (!Array.isArray(msgs)) throw new Error('input must be an array of message objects')
+  if (!Array.isArray(msgs)) return ('input must be an array of message objects')
   const jsonMsgs = msgs.map((msg) => {
     return JSON.stringify(msg, null, 2);
   });

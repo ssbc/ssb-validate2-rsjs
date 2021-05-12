@@ -77,7 +77,7 @@ test("batch validation of out-of-order multi-author messages", (t) => {
         // shuffle the messages (generate out-of-order state)
         msgs.sort(() => Math.random() - 0.5);
         // attempt validation of all messages
-        t.true(validate.validateMultiAuthorBatch(msgs), "success");
+        t.equal(validate.validateMultiAuthorBatch(msgs), null, "success");
         t.pass(`validated ${MESSAGES} messages`);
         t.end();
       })
