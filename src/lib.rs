@@ -1,12 +1,13 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 
-use node_bindgen::derive::node_bindgen;
 use ssb_validate::{
     par_validate_message_hash_chain_of_feed, par_validate_multi_author_message_hash_chain_of_feed,
     par_validate_ooo_message_hash_chain_of_feed, validate_message_hash_chain,
     validate_multi_author_message_hash_chain, validate_ooo_message_hash_chain,
 };
 use ssb_verify_signatures::{par_verify_messages, verify_message};
+use wasm_bindgen::prelude::*;
+pub use wasm_bindgen_rayon::init_thread_pool;
 
 /// Verify signatures for an array of messages.
 ///
@@ -14,10 +15,11 @@ use ssb_verify_signatures::{par_verify_messages, verify_message};
 /// is returned along with the offending message. Note: this method only verifies message signatures;
 /// it does not perform full message validation (use `verify_validate_message_array` for complete
 /// verification and validation).
-#[node_bindgen(name = "verifySignatures")]
-fn verify_messages(array: Vec<String>) -> Option<String> {
+#[wasm_bindgen(js_name = verifySignatures)]
+pub fn verify_messages(array: JsValue) -> Option<String> {
+    let elements: Vec<String> = array.into_serde().unwrap();
     let mut msgs = Vec::new();
-    for msg in array {
+    for msg in elements {
         let msg_bytes = msg.into_bytes();
         msgs.push(msg_bytes)
     }
@@ -44,8 +46,8 @@ fn verify_messages(array: Vec<String>) -> Option<String> {
 /// first in the feed (ie. sequence number != 1 and previous != null). If
 /// verification or validation fails, the cause of the error is returned along with the offending
 /// message.
-#[node_bindgen(name = "validateSingle")]
-fn verify_validate_message(message: String, previous: Option<String>) -> Option<String> {
+#[wasm_bindgen(js_name = validateSingle)]
+pub fn verify_validate_message(message: String, previous: Option<String>) -> Option<String> {
     let msg_bytes = message.into_bytes();
     let previous_msg_bytes = previous.map(|msg| msg.into_bytes());
 
@@ -77,10 +79,11 @@ fn verify_validate_message(message: String, previous: Option<String>) -> Option<
 /// from the beginning of the feed (ie. sequence number != 1 and previous != null). If
 /// verification or validation fails, the cause of the error is returned along with the offending
 /// message.
-#[node_bindgen(name = "validateBatch")]
-fn verify_validate_messages(array: Vec<String>, previous: Option<String>) -> Option<String> {
+#[wasm_bindgen(js_name = validateBatch)]
+pub fn verify_validate_messages(array: JsValue, previous: Option<String>) -> Option<String> {
+    let elements: Vec<String> = array.into_serde().unwrap();
     let mut msgs = Vec::new();
-    for msg in array {
+    for msg in elements {
         let msg_bytes = msg.into_bytes();
         msgs.push(msg_bytes)
     }
@@ -121,10 +124,11 @@ fn verify_validate_messages(array: Vec<String>, previous: Option<String>) -> Opt
 ///
 /// Takes an array of messages as the only argument. If verification or validation fails, the
 /// cause of the error is returned along with the offending message.
-#[node_bindgen(name = "validateOOOBatch")]
-fn verify_validate_out_of_order_messages(array: Vec<String>) -> Option<String> {
+#[wasm_bindgen(js_name = validateOOOBatch)]
+pub fn verify_validate_out_of_order_messages(array: JsValue) -> Option<String> {
+    let elements: Vec<String> = array.into_serde().unwrap();
     let mut msgs = Vec::new();
-    for msg in array {
+    for msg in elements {
         let msg_bytes = msg.into_bytes();
         msgs.push(msg_bytes)
     }
@@ -163,10 +167,11 @@ fn verify_validate_out_of_order_messages(array: Vec<String>) -> Option<String> {
 ///
 /// Takes an array of messages as the only argument. If verification or validation fails, the
 /// cause of the error is returned along with the offending message.
-#[node_bindgen(name = "validateMultiAuthorBatch")]
-fn verify_validate_multi_author_messages(array: Vec<String>) -> Option<String> {
+#[wasm_bindgen(js_name = validateMultiAuthorBatch)]
+pub fn verify_validate_multi_author_messages(array: JsValue) -> Option<String> {
+    let elements: Vec<String> = array.into_serde().unwrap();
     let mut msgs = Vec::new();
-    for msg in array {
+    for msg in elements {
         let msg_bytes = msg.into_bytes();
         msgs.push(msg_bytes)
     }
