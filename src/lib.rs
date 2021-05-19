@@ -5,7 +5,7 @@ use ssb_validate::{
     par_validate_ooo_message_hash_chain_of_feed, validate_message_hash_chain,
     validate_multi_author_message_hash_chain, validate_ooo_message_hash_chain,
 };
-use ssb_verify_signatures::{par_verify_messages, verify_message};
+use ssb_verify_signatures::verify_message;
 use wasm_bindgen::prelude::*;
 pub use wasm_bindgen_rayon::init_thread_pool;
 
@@ -24,19 +24,19 @@ pub fn verify_messages(array: JsValue) -> Option<String> {
         msgs.push(msg_bytes)
     }
 
-    // attempt batch verification and match on error to find invalid message
-    match par_verify_messages(&msgs, None) {
-        Ok(_) => None,
-        Err(e) => {
-            let invalid_msg = &msgs
-                .iter()
-                .find(|msg| verify_message(msg).is_err())
-                .unwrap();
-            let invalid_msg_str = std::str::from_utf8(invalid_msg).unwrap();
-            let err_msg = format!("found invalid message: {}: {}", e, invalid_msg_str);
-            Some(err_msg)
-        }
+    for msg_bytes in &msgs {
+        // attempt verification and match on error to find invalid message
+        match verify_message(&msg_bytes) {
+            Ok(_) => (),
+            Err(e) => {
+                let invalid_msg_str = std::str::from_utf8(&msg_bytes).unwrap();
+                let err_msg = format!("found invalid message: {}: {}", e, invalid_msg_str);
+                return Some(err_msg);
+            }
+        };
     }
+
+    None
 }
 
 /// Verify signature and perform validation for a single message.
@@ -90,19 +90,20 @@ pub fn verify_validate_messages(array: JsValue, previous: Option<String>) -> Opt
 
     let previous_msg = previous.map(|msg| msg.into_bytes());
 
-    // attempt batch verification and match on error to find invalid message
-    match par_verify_messages(&msgs, None) {
-        Ok(_) => (),
-        Err(e) => {
-            let invalid_msg = &msgs
-                .iter()
-                .find(|msg| verify_message(msg).is_err())
-                .unwrap();
-            let invalid_msg_str = std::str::from_utf8(invalid_msg).unwrap();
-            let err_msg = format!("found invalid message: {}: {}", e, invalid_msg_str);
-            return Some(err_msg);
-        }
-    };
+    // we're not running parallel verification here due to rayon issues for wasm:
+    // a dependency uses older versions of `rand` and `getrandom`, which fail to provide
+    // `thread_rng` when parallel verification is attempted in the browser.
+    for msg_bytes in &msgs {
+        // attempt verification and match on error to find invalid message
+        match verify_message(&msg_bytes) {
+            Ok(_) => (),
+            Err(e) => {
+                let invalid_msg_str = std::str::from_utf8(&msg_bytes).unwrap();
+                let err_msg = format!("found invalid message: {}: {}", e, invalid_msg_str);
+                return Some(err_msg);
+            }
+        };
+    }
 
     // attempt batch validation and match on error to find invalid message
     match par_validate_message_hash_chain_of_feed(&msgs, previous_msg.as_ref()) {
@@ -133,19 +134,17 @@ pub fn verify_validate_out_of_order_messages(array: JsValue) -> Option<String> {
         msgs.push(msg_bytes)
     }
 
-    // attempt batch verification and match on error to find invalid message
-    match par_verify_messages(&msgs, None) {
-        Ok(_) => (),
-        Err(e) => {
-            let invalid_msg = &msgs
-                .iter()
-                .find(|msg| verify_message(msg).is_err())
-                .unwrap();
-            let invalid_msg_str = std::str::from_utf8(invalid_msg).unwrap();
-            let err_msg = format!("found invalid message: {}: {}", e, invalid_msg_str);
-            return Some(err_msg);
-        }
-    };
+    for msg_bytes in &msgs {
+        // attempt verification and match on error to find invalid message
+        match verify_message(&msg_bytes) {
+            Ok(_) => (),
+            Err(e) => {
+                let invalid_msg_str = std::str::from_utf8(&msg_bytes).unwrap();
+                let err_msg = format!("found invalid message: {}: {}", e, invalid_msg_str);
+                return Some(err_msg);
+            }
+        };
+    }
 
     // attempt batch validation and match on error to find invalid message
     match par_validate_ooo_message_hash_chain_of_feed(&msgs) {
@@ -176,19 +175,17 @@ pub fn verify_validate_multi_author_messages(array: JsValue) -> Option<String> {
         msgs.push(msg_bytes)
     }
 
-    // attempt batch verification and match on error to find invalid message
-    match par_verify_messages(&msgs, None) {
-        Ok(_) => (),
-        Err(e) => {
-            let invalid_msg = &msgs
-                .iter()
-                .find(|msg| verify_message(msg).is_err())
-                .unwrap();
-            let invalid_msg_str = std::str::from_utf8(invalid_msg).unwrap();
-            let err_msg = format!("found invalid message: {}: {}", e, invalid_msg_str);
-            return Some(err_msg);
-        }
-    };
+    for msg_bytes in &msgs {
+        // attempt verification and match on error to find invalid message
+        match verify_message(&msg_bytes) {
+            Ok(_) => (),
+            Err(e) => {
+                let invalid_msg_str = std::str::from_utf8(&msg_bytes).unwrap();
+                let err_msg = format!("found invalid message: {}: {}", e, invalid_msg_str);
+                return Some(err_msg);
+            }
+        };
+    }
 
     // attempt batch validation and match on error to find invalid message
     match par_validate_multi_author_message_hash_chain_of_feed(&msgs) {

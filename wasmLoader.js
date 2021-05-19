@@ -46,26 +46,22 @@ const msgs = [msg, msg2];
 
 async function run() {
   await init();
-  await initThreadPool(2);
-  //await initThreadPool(navigator.hardwareConcurrency);
+  await initThreadPool(navigator.hardwareConcurrency);
 
   let err = validateSingle(msg);
   if (!err) {
     console.log("validateSingle works :)")
   };
 
-  let err2 = validateBatch([msg, msg2]);
+  let err2 = validateBatch(msgs);
   if (!err2) {
     console.log("validateBatch works :)")
   };
 
-/*
-  let err3 = verifySignatures([msg]);
+  let err3 = verifySignatures(msgs);
   if (!err3) {
     console.log("verifySignatures works :)")
   };
-  
-  */
 };
 
 run();
