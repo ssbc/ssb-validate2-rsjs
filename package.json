@@ -13,7 +13,7 @@
     "async-append-only-log": "^3.0.8",
     "jitdb": "^3.0.2",
     "mkdirp": "^1.0.4",
-    "prettier": "^2.2.1",
+    "prettier": "^2.3.0",
     "rimraf": "^3.0.2",
     "ssb-fixtures": "^2.2.0",
     "ssb-validate": "^4.1.4",
