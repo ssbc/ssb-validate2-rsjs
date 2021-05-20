@@ -1,6 +1,6 @@
 {
   "name": "ssb-validate2-rsjs",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Cryptographic validation of Scuttlebutt messages in the form of Rust bindings.",
   "main": "index.js",
   "repository": {
@@ -20,8 +20,13 @@
     "tape": "^5.2.2"
   },
   "scripts": {
-    "install": "nj-cli build --release",
-    "test": "tape test/*.js",
-    "format-code": "prettier --write \"test/*.js\""
+    "build": "rm -rf native/dist && rm -rf web/pkg && npm run build:web && npm run build:native",
+    "build:native": "cd native && nj-cli build --release",
+    "build:web": "cd web && wasm-pack build --target web",
+    "test": "npm run test:native",
+    "test:native": "tape native/test/test.js && tape native/test/multiAuthorTest.js",
+    "perf": "npm run perf:native",
+    "perf:native": "tape native/test/perf.js && tape native/test/multiAuthorPerf.js",
+    "format-code": "prettier --write \"native/test/*.js\""
   }
 }
