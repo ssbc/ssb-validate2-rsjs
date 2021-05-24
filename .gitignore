@@ -2,7 +2,8 @@ test_results
 notes
 goals
 /target
-/dist
+web/pkg
+native/dist
 **/*~
 **/node_modules
 **/.DS_Store
