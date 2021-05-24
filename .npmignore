@@ -1,3 +1,5 @@
 web/index.html
 web/server.py
 web/wasmLoader.js
+web/rust-toolchain
+web/.cargo/config
