@@ -45,6 +45,9 @@ const validateMultiAuthorBatch = (msgs) => {
   return v.validateMultiAuthorBatch(jsonMsgs);
 };
 
+// Mirrors the `ready` function for the `web` version of `ssb-validate2-rsjs`.
+// The function initializes WASM and WebWorkers in `web`. We define it here with
+// a callback so that both libraries can be safely called with the same code.
 const ready = async(cb) => {
   if (cb) cb();
 };
