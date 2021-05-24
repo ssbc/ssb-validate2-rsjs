@@ -1,4 +1,6 @@
 import {
+  default as init,
+  initThreadPool,
   verifySignatures as verifySignaturesWasm,
   validateSingle as validateSingleWasm,
   validateBatch as validateBatchWasm,
@@ -52,4 +54,16 @@ const validateMultiAuthorBatch = (msgs) => {
   return validateMultiAuthorBatchWasm(jsonMsgs);
 };
 
-export { verifySignatures, validateSingle, validateBatch, validateOOOBatch, validateMultiAuthorBatch };
+/*
+ * Initialize the WASM module and WebWorkers.
+ * The WebWorkers are used as threads for parallel validation.
+ * One thread is created for each processor core.
+ */
+const ready = async(cb) => {
+  await init();
+  await initThreadPool(navigator.hardwareConcurrency);
+
+  if (cb) cb();
+};
+
+export { verifySignatures, validateSingle, validateBatch, validateOOOBatch, validateMultiAuthorBatch, ready };

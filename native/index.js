@@ -45,6 +45,11 @@ const validateMultiAuthorBatch = (msgs) => {
   return v.validateMultiAuthorBatch(jsonMsgs);
 };
 
+const ready = async(cb) => {
+  if (cb) cb();
+};
+
+module.exports.ready = ready;
 module.exports.verifySignatures = verifySignatures;
 module.exports.validateSingle = validateSingle;
 module.exports.validateBatch = validateBatch;

@@ -1,5 +1,5 @@
-import init, { initThreadPool } from "./pkg/ssb_validate2_rsjs_wasm.js";
 import {
+  ready,
   verifySignatures,
   validateSingle,
   validateBatch,
@@ -50,31 +50,40 @@ const msg2 = {
 };
 
 async function run() {
-  await init();
-  await initThreadPool(navigator.hardwareConcurrency);
+  await ready();
 
   let err = validateSingle(msg1);
-  if (!err) {
+  if (err) {
+    console.log(err);
+  } else {
     console.log("validateSingle works :)");
   }
 
   let err2 = validateBatch([msg1, msg2]);
-  if (!err2) {
+  if (err2) {
+    console.log(err2);
+  } else {
     console.log("validateBatch works :)");
   }
 
   let err3 = validateOOOBatch([msg2, msg1]);
-  if (!err3) {
+  if (err3) {
+    console.log(err3);
+  } else {
     console.log("validateOOOBatch works :)");
   }
 
   let err4 = validateMultiAuthorBatch([msg2, msg1]);
-  if (!err4) {
+  if (err4) {
+    console.log(err4);
+  } else {
     console.log("validateMultiAuthorBatch works :)");
   }
 
   let err5 = verifySignatures([msg1, msg2]);
-  if (!err5) {
+  if (err5) {
+    console.log(err5);
+  } else {
     console.log("verifySignatures works :)");
   }
 }
