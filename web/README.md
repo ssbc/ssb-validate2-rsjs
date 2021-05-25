@@ -14,7 +14,10 @@ Rust first needs to be installed in order to compile to WASM ([installation inst
 git clone git@github.com:ssb-ngi-pointer/ssb-validate2-rsjs.git
 cd ssb-validate2-rsjs/web
 cargo install wasm-pack
-wasm-pack build --target web
+# generate release build of ssb-validate2-rsjs
+npm run build:web
+# run the tests
+npm run test:web
 ```
 
 The build process creates JavaScript and WASM artifacts in `./pkgs/`. This includes automatically-generated JavaScript code to initialize and handle web workers when running the WASM module in the browser (required for threading support).
@@ -24,6 +27,10 @@ If you wish to rebuild the WASM module after making changes to the code, use the
 `wasm-pack build --target web`
 
 The tool can also compile for alternative target environments. See the [deployment guide](https://rustwasm.github.io/docs/wasm-bindgen/reference/deployment.html) for more information.
+
+## Tests
+
+Tests for single-author and multi-author messages are included. These tests are defined using [jasmine](https://jasmine.github.io/index.html) and are executed with [karma](http://karma-runner.github.io/6.3/index.html). The tests and related artifacts, such as JSON messages, can be found in the `web/test` directory. Test configuration for `karma` can be found in `karma.conf.js` in the root of this repo.
 
 ## Useful Documentation
 
