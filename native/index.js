@@ -1,7 +1,7 @@
 const v = require("./dist/index.node");
 
 const verifySignatures = (msgs) => {
-  if (!Array.isArray(msgs)) return ('input must be an array of message objects')
+  if (!Array.isArray(msgs)) return "input must be an array of message objects";
   const jsonMsgs = msgs.map((msg) => {
     return JSON.stringify(msg, null, 2);
   });
@@ -15,10 +15,10 @@ const validateSingle = (msg, previous) => {
     return v.validateSingle(jsonMsg, jsonPrevious);
   }
   return v.validateSingle(jsonMsg);
-}
+};
 
 const validateBatch = (msgs, previous) => {
-  if (!Array.isArray(msgs)) return ('input must be an array of message objects')
+  if (!Array.isArray(msgs)) return "input must be an array of message objects";
   const jsonMsgs = msgs.map((msg) => {
     return JSON.stringify(msg, null, 2);
   });
@@ -30,7 +30,7 @@ const validateBatch = (msgs, previous) => {
 };
 
 const validateOOOBatch = (msgs) => {
-  if (!Array.isArray(msgs)) return ('input must be an array of message objects')
+  if (!Array.isArray(msgs)) return "input must be an array of message objects";
   const jsonMsgs = msgs.map((msg) => {
     return JSON.stringify(msg, null, 2);
   });
@@ -38,7 +38,8 @@ const validateOOOBatch = (msgs) => {
 };
 
 const validateMultiAuthorBatch = (msgs) => {
-  if (!Array.isArray(msgs)) throw new Error('input must be an array of message objects')
+  if (!Array.isArray(msgs))
+    throw new Error("input must be an array of message objects");
   const jsonMsgs = msgs.map((msg) => {
     return JSON.stringify(msg, null, 2);
   });
@@ -48,7 +49,7 @@ const validateMultiAuthorBatch = (msgs) => {
 // Mirrors the `ready` function for the `web` version of `ssb-validate2-rsjs`.
 // The function initializes WASM and WebWorkers in `web`. We define it here with
 // a callback so that both libraries can be safely called with the same code.
-const ready = async(cb) => {
+const ready = async (cb) => {
   if (cb) cb();
 };
 
