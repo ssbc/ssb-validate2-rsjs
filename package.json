@@ -1,7 +1,7 @@
 {
   "name": "ssb-validate2-rsjs",
-  "version": "0.2.0",
-  "description": "Cryptographic validation of Scuttlebutt messages in the form of Rust bindings.",
+  "version": "0.3.0",
+  "description": "Cryptographic validation of Scuttlebutt messages.",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -10,8 +10,14 @@
   "author": "Andrew Reid <glyph@mycelial.technology>",
   "license": "AGPL-3.0",
   "devDependencies": {
+    "@open-wc/karma-esm": "^4.0.0",
     "async-append-only-log": "^3.0.8",
+    "jasmine-core": "^3.7.1",
     "jitdb": "^3.0.2",
+    "karma": "^6.3.2",
+    "karma-chrome-launcher": "^3.1.0",
+    "karma-firefox-launcher": "^2.1.0",
+    "karma-jasmine": "^4.0.1",
     "mkdirp": "^1.0.4",
     "prettier": "^2.3.0",
     "rimraf": "^3.0.2",
@@ -23,10 +29,11 @@
     "build": "rm -rf native/dist && rm -rf web/pkg && npm run build:web && npm run build:native",
     "build:native": "cd native && nj-cli build --release",
     "build:web": "cd web && wasm-pack build --target web",
-    "test": "npm run test:native",
+    "test": "npm run test:native && npm run test:web",
     "test:native": "tape native/test/test.js && tape native/test/multiAuthorTest.js",
+    "test:web": "karma start karma.conf.js",
     "perf": "npm run perf:native",
     "perf:native": "tape native/test/perf.js && tape native/test/multiAuthorPerf.js",
-    "format-code": "prettier --write \"native/test/*.js\""
+    "format-code": "prettier --write web/*.js web/test/*.js native/*.js native/test/*.js"
   }
 }

@@ -12,10 +12,12 @@ Rust first needs to be installed in order to build the bindings ([installation i
 
 ```bash
 git clone git@github.com:ssb-ngi-pointer/ssb-validate2-rsjs.git
-cd ssb-validate2-rsjs/native
+cd ssb-validate2-rsjs
 cargo install nj-cli
-# generate release build of ssb-validate2-rsjs and run tests
-npm it
+# generate release build of ssb-validate2-rsjs
+npm run build:native
+# run the tests
+npm run test:native
 ```
 
 The build process creates bindings in `./dist/index.node`.
@@ -24,6 +26,10 @@ If you wish to rebuild the bindings after making changes to the code, use the `n
 
 `nj-cli build --release`
 
+## Tests
+
+Tests for single-author and multi-author messages are included. These tests are defined and executed using [tape](https://www.npmjs.com/package/tape). Test data (SSB messages) are dynamically-generated using [ssb-fixtures](https://github.com/ssb-ngi-pointer/ssb-fixtures). The tests can be found in the `native/test` directory.
+
 ## Performance Benchmarks
 
 After performing build instructions (see above):
@@ -31,8 +37,7 @@ After performing build instructions (see above):
 ```bash
 cd ssb-validate2-rsjs
 # Run benchmarks
-node test/perf
-node test/multiAuthorPerf
+npm run perf:native
 ```
 
 The default values for the performance benchmarks (`test/perf.js`) are 100 messages from 1 author, for a total of 10 iterations. These value constants can be changed in `test/perf.js`. Performance benchmarks for the multi-author method default to 100 messages from 5 authors, for a total of 10 iterations (`test/multiAuthorPerf.js`).

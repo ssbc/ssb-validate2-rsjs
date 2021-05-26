@@ -1,4 +1,4 @@
-const validate = require("../.");
+const validate = require("../../.");
 const test = require("tape");
 const fs = require("fs");
 const path = require("path");

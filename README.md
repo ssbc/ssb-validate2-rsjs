@@ -170,18 +170,9 @@ if (err) {
 //  '}'
 ```
 
-## Performance Benchmarks
+## Developers
 
-After performing build instructions (see above):
-
-```bash
-cd ssb-validate2-rsjs
-# Run benchmarks
-node test/perf
-node test/multiAuthorPerf
-```
-
-The default values for the performance benchmarks (`test/perf.js`) are 100 messages from 1 author, for a total of 10 iterations. These value constants can be changed in `test/perf.js`. Performance benchmarks for the multi-author method default to 100 messages from 5 authors, for a total of 10 iterations (`test/multiAuthorPerf.js`).
+Technical information regarding the implementation of this library, including details about tests and performance benchmarks, can be found in `web/README.md` (WASM) and `native/README.md` (Node.js).
 
 ## License
 
