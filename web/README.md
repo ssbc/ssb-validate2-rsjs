@@ -8,12 +8,15 @@ The [wasm-bindgen](https://crates.io/crates/wasm-bindgen) and [wasm-bindgen-rayo
 
 ## Build
 
-Rust first needs to be installed in order to compile to WASM ([installation instructions](https://rustup.rs/)).
+Rust first needs to be installed in order to compile to WASM ([installation instructions](https://rustup.rs/)). Also ensure that `clang` version 10 or higher is installed (system dependency).
 
 ```bash
 git clone git@github.com:ssb-ngi-pointer/ssb-validate2-rsjs.git
-cd ssb-validate2-rsjs/web
+cd ssb-validate2-rsjs
+# install wasm-pack tool
 cargo install wasm-pack
+# add wasm target for rust compiler
+rustup target add wasm32-unknown-unknown
 # generate release build of ssb-validate2-rsjs
 npm run build:web
 # run the tests
@@ -31,6 +34,12 @@ The tool can also compile for alternative target environments. See the [deployme
 ## Tests
 
 Tests for single-author and multi-author messages are included. These tests are defined using [jasmine](https://jasmine.github.io/index.html) and are executed with [karma](http://karma-runner.github.io/6.3/index.html). The tests and related artifacts, such as JSON messages, can be found in the `web/test` directory. Test configuration for `karma` can be found in `karma.conf.js` in the root of this repo.
+
+As stated in the `Build` section above, the tests can be run with `npm run test:web`. Note that these tests currently only run in Chrome / Chromium. If you are using Chromium, you may have to export the path as an environment variable before running the tests:
+
+`export CHROME_BIN=/usr/bin/chromium`
+
+If you wish to debug the tests it is recommended to set `singleRun: false,` in the `karma.conf.js` configuration file. This will leave the browser open after the tests have run. Click the `debug` button in the browser, open the developer tools and look at the console log for detailed output.
 
 ## Useful Documentation
 
