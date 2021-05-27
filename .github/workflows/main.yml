@@ -38,8 +38,8 @@ jobs:
       - name: npm install
         run: npm install
 
-      - name: Compile native
+      - name: Compile native side
         run: npm run build:native
 
-      - name: Test
-        run: npm test
+      - name: Test native side
+        run: npm test:native
