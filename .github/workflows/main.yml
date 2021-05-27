@@ -42,4 +42,4 @@ jobs:
         run: npm run build:native
 
       - name: Test native side
-        run: npm test:native
+        run: npm run test:native
