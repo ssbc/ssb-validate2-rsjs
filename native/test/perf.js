@@ -26,7 +26,7 @@ const newLogPath = path.join(dir, "flume", "log.bipf");
 const indexesDir = path.join(dir, "indexes");
 
 // generate fixture
-rimraf.sync(dir);
+rimraf.sync(dir, {maxBusyTries: 3});
 mkdirp.sync(dir);
 
 const SEED = "sloop";
@@ -41,7 +41,7 @@ test("generate fixture with flumelog-offset", (t) => {
     seed: SEED,
     messages: MESSAGES,
     authors: AUTHORS,
-    slim: true,
+    slim: false,
   }).then(() => {
     t.true(fs.existsSync(oldLogPath), "log.offset was created");
     t.end();
