@@ -38,7 +38,7 @@ test("generate fixture with flumelog-offset", (t) => {
     seed: SEED,
     messages: MESSAGES,
     authors: AUTHORS,
-    slim: true,
+    slim: false,
   }).then(() => {
     t.true(fs.existsSync(oldLogPath), "log.offset was created");
     t.end();
