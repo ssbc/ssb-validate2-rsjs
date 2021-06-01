@@ -1,3 +1,10 @@
+test_results
+notes
+goals
+/target
+**/*~
+**/node_modules
+**/.DS_Store
 web/index.html
 web/server.py
 web/wasmLoader.js
