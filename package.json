@@ -26,6 +26,7 @@
     "tape": "^5.2.2"
   },
   "scripts": {
+    "install": "cargo install nj-cli && npm run build:native",
     "build": "rm -rf native/dist && rm -rf web/pkg && npm run build:web && npm run build:native",
     "build:native": "cd native && nj-cli build --release",
     "build:web": "cd web && wasm-pack build --target web",
