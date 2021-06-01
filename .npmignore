@@ -5,8 +5,12 @@ goals
 **/*~
 **/node_modules
 **/.DS_Store
+/.github
+native/test
 web/index.html
 web/server.py
 web/wasmLoader.js
 web/rust-toolchain
+web/test
 web/.cargo/config
+karma.conf.js
