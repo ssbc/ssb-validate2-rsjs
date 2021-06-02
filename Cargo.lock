@@ -522,7 +522,9 @@ checksum = "c762bae6dcaf24c4c84667b8579785430908723d5c889f469d76a41d59cc7a9d"
 dependencies = [
  "curve25519-dalek 3.1.0",
  "ed25519",
+ "merlin",
  "rand 0.7.3",
+ "serde",
  "sha2 0.9.5",
  "zeroize",
 ]
@@ -729,8 +731,10 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "c9495705279e7140bf035dde1f6e750c162df8b625267cd52cc44e0b156732c8"
 dependencies = [
  "cfg-if",
+ "js-sys",
  "libc",
  "wasi 0.10.2+wasi-snapshot-preview1",
+ "wasm-bindgen",
 ]
 
 [[package]]
@@ -940,6 +944,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "itertools"
+version = "0.10.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "37d572918e350e82412fe766d24b15e6682fb2ed2bbe018280caa810397cb319"
+dependencies = [
+ "either",
+]
+
+[[package]]
 name = "itoa"
 version = "0.4.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -953,6 +966,12 @@ checksum = "83bdfbace3a0e81a4253f73b49e960b053e396a11012cbd49b9b74d6a2b67062"
 dependencies = [
  "wasm-bindgen",
 ]
+
+[[package]]
+name = "keccak"
+version = "0.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "67c21572b4949434e4fc1e1978b99c5f77064153c59d998bf13ecd96fb5ecba7"
 
 [[package]]
 name = "kv-log-macro"
@@ -1013,6 +1032,18 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "f83fb6581e8ed1f85fd45c116db8405483899489e38406156c25eb743554361d"
 dependencies = [
  "autocfg 1.0.1",
+]
+
+[[package]]
+name = "merlin"
+version = "2.0.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "4e261cf0f8b3c42ded9f7d2bb59dea03aa52bc8a1cbc7482f9fc3fd1229d3b42"
+dependencies = [
+ "byteorder",
+ "keccak",
+ "rand_core 0.5.1",
+ "zeroize",
 ]
 
 [[package]]
@@ -1342,6 +1373,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "6a6b1679d49b24bbfe0c803429aa1874472f50d9b363131f0e89fc356b544d03"
 dependencies = [
  "getrandom 0.1.16",
+ "libc",
  "rand_chacha 0.2.2",
  "rand_core 0.5.1",
  "rand_hc 0.2.0",
@@ -1830,8 +1862,7 @@ dependencies = [
 [[package]]
 name = "ssb-legacy-msg-data"
 version = "0.1.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ee9169f31b74aeae161e315af7da6fbc9c41a1c8b38c586d7f8df26d3eb43251"
+source = "git+https://github.com/mycognosist/legacy-msg-data#366306a58c751d1bdf13419313796d4e3d92cae2"
 dependencies = [
  "base64 0.10.1",
  "encode_unicode",
@@ -1845,7 +1876,8 @@ dependencies = [
 [[package]]
 name = "ssb-legacy-msg-data"
 version = "0.1.2"
-source = "git+https://github.com/mycognosist/legacy-msg-data#366306a58c751d1bdf13419313796d4e3d92cae2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "ee9169f31b74aeae161e315af7da6fbc9c41a1c8b38c586d7f8df26d3eb43251"
 dependencies = [
  "base64 0.10.1",
  "encode_unicode",
@@ -1888,7 +1920,7 @@ version = "0.2.0"
 dependencies = [
  "node-bindgen",
  "ssb-validate",
- "ssb-verify-signatures",
+ "ssb-verify-signatures 1.0.0",
 ]
 
 [[package]]
@@ -1896,7 +1928,7 @@ name = "ssb-validate2-rsjs-wasm"
 version = "0.1.0"
 dependencies = [
  "ssb-validate",
- "ssb-verify-signatures",
+ "ssb-verify-signatures 1.0.1",
  "wasm-bindgen",
  "wasm-bindgen-rayon",
 ]
@@ -1910,7 +1942,7 @@ dependencies = [
  "arrayvec",
  "base64 0.11.0",
  "ed25519-dalek 0.9.1",
- "itertools",
+ "itertools 0.8.2",
  "lazy_static",
  "rand 0.6.5",
  "rayon",
@@ -1918,6 +1950,25 @@ dependencies = [
  "serde",
  "serde_json",
  "sha2 0.8.2",
+ "snafu",
+ "ssb-legacy-msg-data 0.1.2 (registry+https://github.com/rust-lang/crates.io-index)",
+]
+
+[[package]]
+name = "ssb-verify-signatures"
+version = "1.0.1"
+dependencies = [
+ "arrayvec",
+ "base64 0.13.0",
+ "ed25519-dalek 1.0.1",
+ "getrandom 0.2.2",
+ "itertools 0.10.0",
+ "lazy_static",
+ "rand 0.8.3",
+ "rayon",
+ "regex",
+ "serde",
+ "serde_json",
  "snafu",
  "ssb-legacy-msg-data 0.1.2 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
