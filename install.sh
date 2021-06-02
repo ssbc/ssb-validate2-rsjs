@@ -1,3 +1,4 @@
+#!/bin/bash
 if [ "$npm_config_platform" == "android" ] || [ "$npm_config_platform" == "ios" ]; then
   cd native
   mkdir -p dist
