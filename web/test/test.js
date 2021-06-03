@@ -30,7 +30,9 @@ describe("test: ", function () {
 
   beforeAll(async function () {
     // load webworker module
-    const worker = new Worker(new URL('../worker.js', import.meta.url), { type: "module" });
+    const worker = new Worker(new URL("../worker.js", import.meta.url), {
+      type: "module",
+    });
     // load Validator class from worker module
     const Validator = Comlink.wrap(worker);
     // instantiate Validator
@@ -67,7 +69,9 @@ describe("test: ", function () {
     // change one of the msg fields to invalidate the signature
     invalidMsg.value.content.following = false;
     let msg = [invalidMsg];
-    expect(await validate.verifySignatures(msg)).toContain("Signature was invalid");
+    expect(await validate.verifySignatures(msg)).toContain(
+      "Signature was invalid"
+    );
   });
 
   it("validation of first message (`seq` == 1) without `previous`", async function () {
