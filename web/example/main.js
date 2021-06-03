@@ -1,4 +1,4 @@
-import * as Comlink from "./comlink.mjs";
+import * as Comlink from "../comlink.mjs";
 
 const msg1 = {
   key: "%/v5mCnV/kmnVtnF3zXtD4tbzoEQo4kRq/0d/bgxP1WI=.sha256",
@@ -46,7 +46,7 @@ const msg2 = {
 
 async function run() {
   // import the Validator worker class
-  const Validator = Comlink.wrap(new Worker("worker.js", { type: "module" }));
+  const Validator = Comlink.wrap(new Worker("../worker.js", { type: "module" }));
   // instantiate the Validator
   const validate = await new Validator();
   // load the wasm module and initialise the worker threadpool
