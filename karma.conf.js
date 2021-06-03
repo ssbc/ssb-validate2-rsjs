@@ -11,9 +11,10 @@ module.exports = function (config) {
 
     // list of files / patterns to load in the browser
     files: [
-      { pattern: "./web/index.js", type: "module" },
-      { pattern: "web/test/test.js", type: "module" },
-      { pattern: "web/test/multiAuthorTest.js", type: "module" },
+      { pattern: "web/worker.js", type: "module" },
+      { pattern: "web/comlink.mjs", type: "module" },
+      { pattern: "web/index.js", type: "module" },
+      { pattern: "web/test/*.js", type: "module" },
     ],
 
     // list of files / patterns to exclude

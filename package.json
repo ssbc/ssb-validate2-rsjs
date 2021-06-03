@@ -12,6 +12,7 @@
   "devDependencies": {
     "@open-wc/karma-esm": "^4.0.0",
     "async-append-only-log": "^3.0.8",
+    "comlink": "^4.3.1",
     "jasmine-core": "^3.7.1",
     "jitdb": "^3.0.2",
     "karma": "^6.3.2",
