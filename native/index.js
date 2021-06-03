@@ -1,8 +1,6 @@
 const v = require('node-bindgen-loader')({
   moduleName: 'ssb-validate2-rsjs',
-  dir: __dirname + '/..',
-  // TODO: until we do the package split, on desktop this needs to be:
-  // dir: __dirname
+  dir: __dirname
 })
 
 const verifySignatures = (msgs) => {
