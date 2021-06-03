@@ -7,9 +7,8 @@ goals
 **/.DS_Store
 /.github
 native/test
-web/index.html
+web/example
 web/server.py
-web/wasmLoader.js
 web/rust-toolchain
 web/test
 web/.cargo/config
