@@ -1,4 +1,8 @@
 #!/bin/bash
+
+# `npm_config_platform` is set when nodejs-mobile is controlling npm install
+# in order to build native modules, so we build our module here and move it
+# correctly
 if [ "$npm_config_platform" == "android" ]; then
   cd native
   mkdir -p dist
