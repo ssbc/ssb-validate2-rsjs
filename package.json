@@ -9,6 +9,9 @@
   },
   "author": "Andrew Reid <glyph@mycelial.technology>",
   "license": "AGPL-3.0",
+  "dependencies": {
+    "node-bindgen-loader": "^1.0.1"
+  },
   "devDependencies": {
     "@open-wc/karma-esm": "^4.0.0",
     "async-append-only-log": "^3.0.8",

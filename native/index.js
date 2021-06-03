@@ -1,4 +1,9 @@
-const v = require("./dist/index.node");
+const v = require('node-bindgen-loader')({
+  moduleName: 'ssb-validate2-rsjs',
+  dir: __dirname + '/..',
+  // TODO: until we do the package split, on desktop this needs to be:
+  // dir: __dirname
+})
 
 const verifySignatures = (msgs) => {
   if (!Array.isArray(msgs)) return "input must be an array of message objects";
