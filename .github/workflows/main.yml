@@ -32,14 +32,8 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
 
-      - name: install nj-cli
-        run: cargo install nj-cli
-
       - name: npm install
         run: npm install
 
-      - name: Compile native side
-        run: npm run build:native
-
-      - name: Test native side
-        run: npm run test:native
+      - name: Test
+        run: npm test

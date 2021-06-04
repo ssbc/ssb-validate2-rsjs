@@ -1,15 +1,8 @@
 test_results
 notes
 goals
-/target
 **/*~
 **/node_modules
 **/.DS_Store
 /.github
-native/test
-web/example
-web/server.py
-web/rust-toolchain
-web/test
-web/.cargo/config
-karma.conf.js
+/test
