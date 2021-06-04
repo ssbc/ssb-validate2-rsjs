@@ -9,32 +9,14 @@
   },
   "author": "Andrew Reid <glyph@mycelial.technology>",
   "license": "AGPL-3.0",
+  "dependencies": {
+    "ssb-validate2-rsjs-node": "~0.3.0",
+    "ssb-validate2-rsjs-wasm": "~0.3.0"
+  },
   "devDependencies": {
-    "@open-wc/karma-esm": "^4.0.0",
-    "async-append-only-log": "^3.0.8",
-    "comlink": "^4.3.1",
-    "jasmine-core": "^3.7.1",
-    "jitdb": "^3.0.2",
-    "karma": "^6.3.2",
-    "karma-chrome-launcher": "^3.1.0",
-    "karma-firefox-launcher": "^2.1.0",
-    "karma-jasmine": "^4.0.1",
-    "mkdirp": "^1.0.4",
-    "prettier": "^2.3.0",
-    "rimraf": "^3.0.2",
-    "ssb-fixtures": "^2.3.1",
-    "ssb-validate": "^4.1.4",
     "tape": "^5.2.2"
   },
   "scripts": {
-    "build": "rm -rf native/dist && rm -rf web/pkg && npm run build:web && npm run build:native",
-    "build:native": "cd native && nj-cli build --release",
-    "build:web": "cd web && wasm-pack build --target web",
-    "test": "npm run test:native && npm run test:web",
-    "test:native": "tape native/test/test.js && tape native/test/multiAuthorTest.js",
-    "test:web": "karma start karma.conf.js",
-    "perf": "npm run perf:native",
-    "perf:native": "tape native/test/perf.js && tape native/test/multiAuthorPerf.js",
-    "format-code": "prettier --write web/*.js web/test/*.js native/*.js native/test/*.js"
+    "test": "tape test/*.js"
   }
 }

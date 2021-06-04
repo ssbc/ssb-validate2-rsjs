@@ -4,7 +4,7 @@ Cryptographic validation of Scuttlebutt messages in the form of Rust bindings fo
 
 Perform batch verification and validation of SSB messages using [ssb-verify-signatures](https://crates.io/crates/ssb-verify-signatures) and [ssb-validate](https://github.com/mycognosist/ssb-validate) from the [Sunrise Choir](https://github.com/sunrise-choir).
 
-See the `README` in the `native` directory for build instructions and details concerning the Node.js bindings. Corresponding information for the WebAssembly (WASM) Rust code can be found in the `README` of the `web` directory.
+This package wraps [ssb-validate2-rsjs-node](https://github.com/ssb-ngi-pointer/ssb-validate2-rsjs-node) and [ssb-validate2-rsjs-wasm](https://github.com/ssb-ngi-pointer/ssb-validate2-rsjs-wasm) so to support Node.js (by compiling a native add-on) and Browsers (by compiling to WASM).
 
 ## Usage
 
@@ -34,8 +34,6 @@ validate.validateOOOBatch(msgs);
 // Validate an array of out-of-order messages by multiple authors
 validate.validateMultiAuthorBatch(msgs);
 ```
-
-See `test/test.js` in this repo for in-context example usage (uses [ssb-fixtures](https://github.com/ssb-ngi-pointer/ssb-fixtures) and [jitdb](https://github.com/ssb-ngi-pointer/jitdb)).
 
 ## Behaviour
 
@@ -169,10 +167,6 @@ if (err) {
 //  '  "timestamp": 1571140555382.0059\n' +
 //  '}'
 ```
-
-## Developers
-
-Technical information regarding the implementation of this library, including details about tests and performance benchmarks, can be found in `web/README.md` (WASM) and `native/README.md` (Node.js).
 
 ## License
 
