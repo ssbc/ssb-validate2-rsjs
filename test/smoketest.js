@@ -2,10 +2,11 @@ const test = require("tape");
 const validate = require("../");
 
 test("validateSingle is available in node.js", (t) => {
-  const out = validate.validateSingle({foo: 32})
-  t.ok(out)
-  t.match(out, /found invalid message/)
-  t.end()
+  validate.validateSingle({foo: 32}, null, (err) => {
+    t.ok(err);
+    t.match(err, /found invalid message/);
+    t.end();
+  })
 });
 
 
