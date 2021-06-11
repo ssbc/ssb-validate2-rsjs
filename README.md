@@ -12,27 +12,27 @@ This package wraps [ssb-validate2-rsjs-node](https://github.com/ssb-ngi-pointer/
 const validate = require('ssb-validate2-rsjs');
 
 // Verify signatures for an array of messages
-validate.verifySignatures(msgs);
+validate.verifySignatures(msgs, cb);
 
 // Validate a single message
 // Note: assumes msg.sequence == 1 (ie. `previous` == null)
-validate.validateSingle(msg);
+validate.validateSingle(msg, null, cb);
 
 // Validate a single message (includes `previous`)
-validate.validateSingle(msg, previous);
+validate.validateSingle(msg, previous, cb);
 
 // Validate an array of messages by a single author
 // Note: assumes msgs[0].sequence == 1 (ie. `previous` == null)
-validate.validateBatch(msgs);
+validate.validateBatch(msgs, null, cb);
 
 // Validate an array of messages by a single author (includes `previous`)
-validate.validateBatch(msgs, previous);
+validate.validateBatch(msgs, previous, cb);
 
 // Validate an array of out-of-order messages by a single author
-validate.validateOOOBatch(msgs);
+validate.validateOOOBatch(msgs, cb);
 
 // Validate an array of out-of-order messages by multiple authors
-validate.validateMultiAuthorBatch(msgs);
+validate.validateMultiAuthorBatch(msgs, cb);
 ```
 
 ## Behaviour
@@ -43,11 +43,11 @@ The `msg` and `previous` arguments must always be in the form of message objects
 
 The `msgs` argument must always be in the form of an array of message objects.
 
-The `previous` argument for `validateSingle()` and `validateBatch()` is optional. Calling these functions without `previous` is the equivalent of passing `previous` as `null`.
+The `previous` argument for `validateSingle()` and `validateBatch()` can be skipped by passing `null`.
 
-**Return Expressions**
+**Callbacks**
 
-All five functions (`verifySignatures()`, `validateSingle()`, `validateBatch()`, `validateOOOBatch()` and `validateMultiAuthorBatch()`) return `null` on success. In the case of a failure in verification or validation, these functions will return immediately with detailed information in the error message (currently includes the reason for failure and the full message which caused the failure). The error message is returned as a `string` type.
+All five functions (`verifySignatures()`, `validateSingle()`, `validateBatch()`, `validateOOOBatch()` and `validateMultiAuthorBatch()`) require the last argument to be a callback function. On success, the callback is called with `null` as the first argument. In the case of a failure in verification or validation, the callback's first argument will be an error message with detailed information (currently includes the reason for failure and the full message which caused the failure). The error message is returned as a `string`.
 
 **Validation Checks**
 
@@ -66,10 +66,9 @@ const v = require('ssb-validate2-rsjs');
 
 msgs = "this is a string";
 
-let err = v.verifySignatures(msgs);
-if (err) {
-  console.log(err)
-}
+v.verifySignatures(msgs, (err) => {
+  if (err) console.log(err);
+});
 
 // 'input must be an array of message objects'
 ```
@@ -98,10 +97,9 @@ msg = {
 
 msgs = [msg]
 
-let err = v.verifySignatures(msgs);
-if (err) {
-  console.log(err)
-}
+v.verifySignatures(msgs, (err) => {
+  if (err) console.log(err);
+});
 
 //'found invalid message: Signature was invalid: {\n' +
 //  '  "key": "%kmXb3MXtBJaNugcEL/Q7G40DgcAkMNTj3yhmxKHjfCM=.sha256",\n' +
@@ -145,10 +143,9 @@ msg = {
 
 msgs = [msg]
 
-let err = v.validateBatch(msgs);
-if (err) {
-  console.log(err)
-}
+v.validateBatch(msgs, null, (err) => {
+  if (err) console.log(err);
+});
 
 //'found invalid message: The first message of a feed must have seq of 1: {\n' +
 //  '  "key": "%lYAK7Lfigw00zMt/UtVg5Ol9XdR4BHWUCxq4r2Ops90=.sha256",\n' +
