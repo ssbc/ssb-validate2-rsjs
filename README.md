@@ -8,33 +8,36 @@ This package wraps [ssb-validate2-rsjs-node](https://github.com/ssb-ngi-pointer/
 
 ## Usage
 
-Usage differs slightly based on context: in browser (`WASM`) or on native (`node`). Please consult the [usage example in ssb-validate2-rsjs-wasm](https://github.com/ssb-ngi-pointer/ssb-validate2-rsjs-wasm#usage) for additional details.
-
 ```javascript
 const validate = require('ssb-validate2-rsjs');
 
-// Verify signatures for an array of messages
-validate.verifySignatures(msgs, cb);
+// Initialize
+validate.ready(() => {
 
-// Validate a single message
-// Note: assumes msg.sequence == 1 (ie. `previous` == null)
-validate.validateSingle(msg, null, cb);
+  // Verify signatures for an array of messages
+  validate.verifySignatures(msgs, cb);
 
-// Validate a single message (includes `previous`)
-validate.validateSingle(msg, previous, cb);
+  // Validate a single message
+  // Note: assumes msg.sequence == 1 (ie. `previous` == null)
+  validate.validateSingle(msg, null, cb);
 
-// Validate an array of messages by a single author
-// Note: assumes msgs[0].sequence == 1 (ie. `previous` == null)
-validate.validateBatch(msgs, null, cb);
+  // Validate a single message (includes `previous`)
+  validate.validateSingle(msg, previous, cb);
 
-// Validate an array of messages by a single author (includes `previous`)
-validate.validateBatch(msgs, previous, cb);
+  // Validate an array of messages by a single author
+  // Note: assumes msgs[0].sequence == 1 (ie. `previous` == null)
+  validate.validateBatch(msgs, null, cb);
 
-// Validate an array of out-of-order messages by a single author
-validate.validateOOOBatch(msgs, cb);
+  // Validate an array of messages by a single author (includes `previous`)
+  validate.validateBatch(msgs, previous, cb);
 
-// Validate an array of out-of-order messages by multiple authors
-validate.validateMultiAuthorBatch(msgs, cb);
+  // Validate an array of out-of-order messages by a single author
+  validate.validateOOOBatch(msgs, cb);
+
+  // Validate an array of out-of-order messages by multiple authors
+  validate.validateMultiAuthorBatch(msgs, cb);
+
+});
 ```
 
 ## Behaviour
