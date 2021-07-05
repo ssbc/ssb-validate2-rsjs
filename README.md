@@ -15,27 +15,27 @@ const validate = require('ssb-validate2-rsjs');
 validate.ready(() => {
 
   // Verify signatures for an array of messages
-  validate.verifySignatures(msgs, cb);
+  validate.verifySignatures(hmacKey, msgs, cb);
 
   // Validate a single message
   // Note: assumes msg.sequence == 1 (ie. `previous` == null)
-  validate.validateSingle(msg, null, cb);
+  validate.validateSingle(hmacKey, msg, null, cb);
 
   // Validate a single message (includes `previous`)
-  validate.validateSingle(msg, previous, cb);
+  validate.validateSingle(hmacKey, msg, previous, cb);
 
   // Validate an array of messages by a single author
   // Note: assumes msgs[0].sequence == 1 (ie. `previous` == null)
-  validate.validateBatch(msgs, null, cb);
+  validate.validateBatch(hmacKey, msgs, null, cb);
 
   // Validate an array of messages by a single author (includes `previous`)
-  validate.validateBatch(msgs, previous, cb);
+  validate.validateBatch(hmacKey, msgs, previous, cb);
 
   // Validate an array of out-of-order messages by a single author
-  validate.validateOOOBatch(msgs, cb);
+  validate.validateOOOBatch(hmacKey, msgs, cb);
 
   // Validate an array of out-of-order messages by multiple authors
-  validate.validateMultiAuthorBatch(msgs, cb);
+  validate.validateMultiAuthorBatch(hmacKey, msgs, cb);
 
 });
 ```
@@ -43,6 +43,8 @@ validate.ready(() => {
 ## Behaviour
 
 **Arguments**
+
+The first argument is the `hmacKey` for customizing the signature hash. This argument is most of the times simply `null`.
 
 The `msg` and `previous` arguments must always be in the form of message value objects (_not_ `KVT` objects).
 
@@ -79,7 +81,7 @@ msg = {
   signature: '8XdA3TwXsWasY8PGo5zI/QJAi6XsyCklzQv8dVtgOEZk4jRCVFDLb4OCK7H/s+lxOcxjpKn4NGocbQ7Z5mF5CQ==.sig.ed25519'
 }
 
-v.validateSingle(msg, null, (err, res) => {
+v.validateSingle(null, msg, null, (err, res) => {
   if (err) console.log(err);
   else console.log(res);
 });
@@ -90,7 +92,7 @@ v.validateSingle(msg, null, (err, res) => {
 Validate a batch of messages (array of `message.value` objects):
 
 ```javascript
-v.validateBatch(msgs, null, (err, res) => {
+v.validateBatch(null, msgs, null, (err, res) => {
   if (err) console.log(err);
   else console.log(res);
 });
@@ -111,7 +113,7 @@ const v = require('ssb-validate2-rsjs');
 
 msgs = "this is a string";
 
-v.verifySignatures(msgs, (err, res) => {
+v.verifySignatures(null, msgs, (err, res) => {
   if (err) console.log(err);
 });
 
@@ -138,8 +140,8 @@ msg = {
 
 msgs = [msg]
 
-v.verifySignatures(msgs, (err, res) => {
-  if (err) console.log(err);
+v.verifySignatures(null, msgs, (err, res) => {
+  if (err) console.log(err.message);
 });
 
 //'found invalid message: Signature was invalid: {\n' +
@@ -176,8 +178,8 @@ msg = {
 
 msgs = [msg]
 
-v.validateBatch(msgs, null, (err, res) => {
-  if (err) console.log(err);
+v.validateBatch(null, msgs, null, (err, res) => {
+  if (err) console.log(err.message);
 });
 
 //'found invalid message: The first message of a feed must have seq of 1: {\n' +
