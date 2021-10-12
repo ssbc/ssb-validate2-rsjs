@@ -16,7 +16,7 @@
     "LICENSES/*"
   ],
   "dependencies": {
-    "ssb-validate2-rsjs-node": "~0.6.0",
+    "ssb-validate2-rsjs-node": "~1.0.0",
     "ssb-validate2-rsjs-wasm": "~0.6.0"
   },
   "devDependencies": {
