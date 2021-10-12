@@ -1,3 +1,9 @@
+<!--
+SPDX-FileCopyrightText: 2021 Andrew 'glyph' Reid
+
+SPDX-License-Identifier: CC0-1.0
+-->
+
 # ssb-validate2-rsjs
 
 Cryptographic validation of Scuttlebutt messages in the form of Rust bindings for Node.js and WebAssembly.
@@ -198,4 +204,4 @@ v.validateBatch(null, msgs, null, (err, res) => {
 
 ## License
 
-AGPL 3.0.
+LGPL 3.0.
